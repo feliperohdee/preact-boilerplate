@@ -26,6 +26,7 @@ module.exports = (env = {}) => {
 	const cssLoader = {
 		loader: 'css-loader',
 		options: {
+			minimize: true,
 			modules: true,
 			localIdentName: prod ? '[hash:base64:5]' : '[local]__[hash:base64:5]',
 			importLoaders: 1,
@@ -136,7 +137,6 @@ module.exports = (env = {}) => {
 				],
 				minify: {
 					collapseWhitespace: true,
-					minifyCSS: true,
 					removeScriptTypeAttributes: true,
 					removeRedundantAttributes: true,
 					removeStyleLinkTypeAttributes: true,
