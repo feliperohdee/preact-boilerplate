@@ -1,6 +1,8 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HTMLPlugin = require('html-webpack-plugin')
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
+const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
+const PreloadWebpackPlugin = require('preload-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const path = require('path');
@@ -11,13 +13,15 @@ const {
 
 module.exports = (env = {}) => {
 	const {
+		analyze = false,
 		dir,
+		inlineCss = true,
+		preload = true,
 		prod = false,
+		template,
 		title = '',
-		analyze = false
+		uglify = true
 	} = env;
-
-	console.log(env)
 
 	const cssLoader = {
 		loader: 'css-loader',
@@ -53,7 +57,7 @@ module.exports = (env = {}) => {
 		resolve: {
 			alias: {
 				'asyncComponent': path.resolve(__dirname, './lib/asyncComponent'),
-				'preact$': path.resolve(__dirname, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
+				'preact$': path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
 			}
 		},
 		resolveLoader: {
@@ -126,7 +130,10 @@ module.exports = (env = {}) => {
 		plugins: [
 			new ExtractTextPlugin('style.[hash:5].css'),
 			new HTMLPlugin({
-				title,
+				title: decodeURIComponent(title),
+				excludeAssets: [
+					/main.*\.js$/
+				],
 				minify: {
 					collapseWhitespace: true,
 					removeScriptTypeAttributes: true,
@@ -134,19 +141,32 @@ module.exports = (env = {}) => {
 					removeStyleLinkTypeAttributes: true,
 					removeComments: true
 				},
-				inlineSource: '.css$'
+				inlineSource: '.css$',
+				template: template ? path.resolve(dir, template) : path.resolve(__dirname, './template.ejs')
 			}),
+			new HtmlWebpackExcludeAssetsPlugin(),
 			new webpack.DefinePlugin({
 				PRODUCTION: prod
 			})
-		].concat(prod ? [
-			new HtmlWebpackInlineSourcePlugin(),
-			new UglifyJsPlugin()
-		] : [])
+		]
 	};
 
-	if(analyze) {
-		config.plugins.push(new BundleAnalyzerPlugin());
+	if (prod) {
+		if (analyze === true || analyze === 'true') {
+			config.plugins.push(new BundleAnalyzerPlugin());
+		}
+
+		if (inlineCss === true || inlineCss === 'true') {
+			config.plugins.push(new HtmlWebpackInlineSourcePlugin());
+		}
+
+		if (preload === true || preload === 'true') {
+			config.plugins.push(new PreloadWebpackPlugin());
+		}
+
+		if (uglify === true || uglify === 'true') {
+			config.plugins.push(new UglifyJsPlugin());
+		}
 	}
 
 	return config;

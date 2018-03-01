@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title><%= htmlWebpackPlugin.options.title %></title>
+	</head>
+	<body>
+		<% _.forEach(htmlWebpackPlugin.files.js, value => { %>
+			<script defer src="<%= value %>"></script>
+		<% })%>
+	</body>
+</html>

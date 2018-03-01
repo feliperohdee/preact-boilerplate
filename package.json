@@ -1,10 +1,9 @@
 {
   "name": "preact-boilerplate",
+  "description": "Lightweight preact boilerplate with support for inline CSS, automatic code splitting and async scripts.",
   "version": "1.0.0",
   "license": "MIT",
-  "dependencies": {
-    "preact": "^8.2.7"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.40",
     "@babel/plugin-proposal-optional-chaining": "^7.0.0-beta.40",
@@ -15,12 +14,14 @@
     "css-loader": "^0.28.10",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.10",
+    "html-webpack-exclude-assets-plugin": "^0.0.6",
     "html-webpack-inline-source-plugin": "^0.0.9",
     "html-webpack-plugin": "^3.0.0",
     "json-loader": "^0.5.7",
     "loader-utils": "^1.1.0",
     "node-sass": "^4.7.2",
     "postcss-loader": "^2.1.1",
+    "preload-webpack-plugin": "^2.2.0",
     "raw-loader": "^0.5.1",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.20.2",
