@@ -100,12 +100,16 @@ module.exports = (env = {}) => {
 						}]
 					],
 					plugins: [
+						['@babel/plugin-proposal-class-properties'],
+						['@babel/plugin-proposal-object-rest-spread'],
 						['@babel/plugin-proposal-optional-chaining', {
 							loose: true
 						}],
 						['@babel/plugin-transform-react-jsx', {
 							pragma: 'h'
-						}]
+						}],
+						['@babel/plugin-transform-react-constant-elements'],
+						['transform-react-remove-prop-types']
 					]
 				}
 			}, {
