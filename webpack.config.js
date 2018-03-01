@@ -1,4 +1,6 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const fs = require('fs');
 const HTMLPlugin = require('html-webpack-plugin')
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
@@ -140,11 +142,6 @@ module.exports = (env = {}) => {
 			historyApiFallback: true
 		},
 		plugins: [
-			new MakeDirWebpackPlugin({
-				dirs: [{
-					path: path.resolve(dir, 'build/assets')
-				}]
-			}),
 			new ExtractTextPlugin('style.[hash:5].css'),
 			new HTMLPlugin({
 				title: decodeURIComponent(title),
@@ -183,6 +180,21 @@ module.exports = (env = {}) => {
 
 		if (uglify === true || uglify === 'true') {
 			config.plugins.push(new UglifyJsPlugin());
+		}
+
+		const assetsDir = path.join(dir, 'src/assets');
+
+		if (fs.existsSync(assetsDir)) {
+			config.plugins.push(new CopyWebpackPlugin([{
+				from: assetsDir,
+				to: path.join(dir, 'build/assets')
+			}]));
+		} else {
+			config.plugins.push(new MakeDirWebpackPlugin({
+				dirs: [{
+					path: path.resolve(dir, 'build/assets')
+				}]
+			}))
 		}
 	}
 
