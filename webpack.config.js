@@ -136,6 +136,7 @@ module.exports = (env = {}) => {
 				],
 				minify: {
 					collapseWhitespace: true,
+					minifyCSS: true,
 					removeScriptTypeAttributes: true,
 					removeRedundantAttributes: true,
 					removeStyleLinkTypeAttributes: true,
