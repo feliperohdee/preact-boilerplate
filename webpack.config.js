@@ -15,13 +15,13 @@ const {
 module.exports = (env = {}) => {
 	const {
 		analyze = false,
-		dir,
-		inlineCss = true,
-		preload = true,
-		prod = false,
-		template,
-		title = '',
-		uglify = true
+			dir,
+			inlineCss = true,
+			preload = true,
+			prod = false,
+			template,
+			title = '',
+			uglify = true
 	} = env;
 
 	const cssLoader = {
@@ -60,6 +60,7 @@ module.exports = (env = {}) => {
 			alias: {
 				'asyncComponent': path.resolve(__dirname, './lib/asyncComponent'),
 				'preact$': path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
+				'h$': path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
 			}
 		},
 		resolveLoader: {
@@ -108,6 +109,11 @@ module.exports = (env = {}) => {
 						}],
 						['@babel/plugin-transform-react-jsx', {
 							pragma: 'h'
+						}],
+						['babel-plugin-jsx-pragmatic', {
+							module: 'preact',
+							export: 'h',
+							import: 'h'
 						}],
 						['@babel/plugin-transform-react-constant-elements'],
 						['transform-react-remove-prop-types']
