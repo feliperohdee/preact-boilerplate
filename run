@@ -1,0 +1,9 @@
+#!/bin/bash
+CMD=$1
+DIR=$PWD
+
+if [ "$CMD" = "build" ]; then
+	cd node_modules/preact-boilerplate && rm -rf $DIR/build && node_modules/.bin/webpack --env.dir=$DIR --env.prod ${@:2}
+else
+	cd node_modules/preact-boilerplate && node_modules/.bin/webpack-dev-server --progress --hot --inline --env.dir=$DIR ${@:2}
+fi

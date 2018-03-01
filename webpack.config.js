@@ -17,6 +17,8 @@ module.exports = (env = {}) => {
 		analyze = false
 	} = env;
 
+	console.log(env)
+
 	const cssLoader = {
 		loader: 'css-loader',
 		options: {
