@@ -2,6 +2,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HTMLPlugin = require('html-webpack-plugin')
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
+const MakeDirWebpackPlugin = require('make-dir-webpack-plugin');
 const PreloadWebpackPlugin = require('preload-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
@@ -133,6 +134,11 @@ module.exports = (env = {}) => {
 			historyApiFallback: true
 		},
 		plugins: [
+			new MakeDirWebpackPlugin({
+				dirs: [{
+					path: path.resolve(dir, 'build/assets')
+				}]
+			}),
 			new ExtractTextPlugin('style.[hash:5].css'),
 			new HTMLPlugin({
 				title: decodeURIComponent(title),
