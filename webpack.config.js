@@ -1,7 +1,7 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const fs = require('fs');
-const HTMLPlugin = require('html-webpack-plugin')
+const HTMLPlugin = require('html-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin');
@@ -31,7 +31,8 @@ module.exports = (env = {}) => {
 		options: {
 			minimize: true,
 			modules: true,
-			localIdentName: prod ? '[hash:base64:5]' : '[local]__[hash:base64:5]',
+			localIdentName: prod ?
+				'[hash:base64:5]' : '[local]__[hash:base64:5]',
 			importLoaders: 1,
 			sourceMap: !prod
 		}
@@ -42,13 +43,11 @@ module.exports = (env = {}) => {
 		options: {
 			ident: 'postcss',
 			sourceMap: true,
-			plugins: [autoprefixer({
-				browsers: [
-					'> 1%',
-					'IE >= 9',
-					'last 2 versions'
-				]
-			})]
+			plugins: [
+				autoprefixer({
+					browsers: ['> 1%', 'IE >= 9', 'last 2 versions']
+				})
+			]
 		}
 	};
 
@@ -60,9 +59,9 @@ module.exports = (env = {}) => {
 		},
 		resolve: {
 			alias: {
-				'asyncComponent': path.resolve(__dirname, './lib/asyncComponent'),
-				'preact$': path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
-				'h$': path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
+				asyncComponent: path.resolve(__dirname, './lib/asyncComponent'),
+				preact$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
+				h$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h')
 			}
 		},
 		resolveLoader: {
@@ -73,19 +72,16 @@ module.exports = (env = {}) => {
 		module: {
 			rules: [{
 				test: /\.css|\.scss$/,
-				use: prod ? ExtractTextPlugin.extract({
-					fallback: 'style-loader',
-					use: [
+				use: prod ?
+					ExtractTextPlugin.extract({
+						fallback: 'style-loader',
+						use: [cssLoader, postCssLoader, 'sass-loader']
+					}) : [
+						'style-loader',
 						cssLoader,
 						postCssLoader,
 						'sass-loader'
 					]
-				}) : [
-					'style-loader',
-					cssLoader,
-					postCssLoader,
-					'sass-loader'
-				]
 			}, {
 				test: /\.js?/i,
 				exclude: /node_modules/,
@@ -94,8 +90,8 @@ module.exports = (env = {}) => {
 					babelrc: false,
 					presets: [
 						['@babel/preset-env', {
-							'targets': {
-								'browsers': [
+							targets: {
+								browsers: [
 									'> 1%',
 									'IE >= 9',
 									'last 2 versions'
@@ -118,7 +114,9 @@ module.exports = (env = {}) => {
 							import: 'h'
 						}],
 						['@babel/plugin-transform-react-constant-elements'],
-						['transform-react-remove-prop-types']
+						['transform-react-remove-prop-types'],
+						['@babel/plugin-proposal-export-default-from'],
+						['@babel/plugin-proposal-export-namespace-from']
 					]
 				}
 			}, {
@@ -145,9 +143,7 @@ module.exports = (env = {}) => {
 			new ExtractTextPlugin('style.[hash:5].css'),
 			new HTMLPlugin({
 				title: decodeURIComponent(title),
-				excludeAssets: [
-					/main.*\.js$/
-				],
+				excludeAssets: [/main.*\.js$/],
 				minify: {
 					collapseWhitespace: true,
 					removeScriptTypeAttributes: true,
@@ -156,7 +152,8 @@ module.exports = (env = {}) => {
 					removeComments: true
 				},
 				inlineSource: '.css$',
-				template: template ? path.resolve(dir, template) : path.resolve(__dirname, './template.ejs')
+				template: template ?
+					path.resolve(dir, template) : path.resolve(__dirname, './template.ejs')
 			}),
 			new HtmlWebpackExcludeAssetsPlugin(),
 			new webpack.DefinePlugin({
@@ -185,16 +182,20 @@ module.exports = (env = {}) => {
 		const assetsDir = path.join(dir, 'src/assets');
 
 		if (fs.existsSync(assetsDir)) {
-			config.plugins.push(new CopyWebpackPlugin([{
-				from: assetsDir,
-				to: path.join(dir, 'build/assets')
-			}]));
+			config.plugins.push(
+				new CopyWebpackPlugin([{
+					from: assetsDir,
+					to: path.join(dir, 'build/assets')
+				}])
+			);
 		} else {
-			config.plugins.push(new MakeDirWebpackPlugin({
-				dirs: [{
-					path: path.resolve(dir, 'build/assets')
-				}]
-			}))
+			config.plugins.push(
+				new MakeDirWebpackPlugin({
+					dirs: [{
+						path: path.resolve(dir, 'build/assets')
+					}]
+				})
+			);
 		}
 	}
 
