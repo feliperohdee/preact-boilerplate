@@ -1,13 +1,14 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const fs = require('fs');
 const HTMLPlugin = require('html-webpack-plugin');
-const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
+const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin');
 const PreloadWebpackPlugin = require('preload-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
+const fs = require('fs');
+const ip = require('ip');
 const path = require('path');
 const webpack = require('webpack');
 const {
@@ -135,8 +136,11 @@ module.exports = (env = {}) => {
 		},
 		devtool: prod ? false : 'source-map',
 		devServer: {
+			port: process.env.PORT || 8080,
+			host: process.env.HOST || ip.address(),
+			compress: false,
 			contentBase: path.join(dir, 'src'),
-			compress: true,
+			disableHostCheck: true,
 			historyApiFallback: true
 		},
 		plugins: [

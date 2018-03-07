@@ -6,7 +6,7 @@
 	</head>
 	<body>
 		<% _.forEach(htmlWebpackPlugin.files.js, value => { %>
-			<script defer src="<%= value %>"></script>
+			<script defer src="/<%= value %>"></script>
 		<% })%>
 	</body>
 </html>
