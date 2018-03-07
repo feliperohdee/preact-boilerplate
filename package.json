@@ -25,7 +25,6 @@
     "html-webpack-exclude-assets-plugin": "^0.0.6",
     "html-webpack-inline-source-plugin": "^0.0.9",
     "html-webpack-plugin": "^3.0.0",
-    "ip": "^1.1.5",
     "json-loader": "^0.5.7",
     "loader-utils": "^1.1.0",
     "make-dir-webpack-plugin": "^0.1.0",

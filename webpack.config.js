@@ -8,7 +8,6 @@ const PreloadWebpackPlugin = require('preload-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const fs = require('fs');
-const ip = require('ip');
 const path = require('path');
 const webpack = require('webpack');
 const {
@@ -137,7 +136,7 @@ module.exports = (env = {}) => {
 		devtool: prod ? false : 'source-map',
 		devServer: {
 			port: process.env.PORT || 8080,
-			host: process.env.HOST || ip.address(),
+			host: process.env.HOST || '0.0.0.0',
 			compress: false,
 			contentBase: path.join(dir, 'src'),
 			disableHostCheck: true,
