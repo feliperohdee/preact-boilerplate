@@ -17,13 +17,13 @@ const {
 module.exports = (env = {}) => {
 	const {
 		analyze = false,
-			dir,
-			inlineCss = true,
-			preload = true,
-			prod = false,
-			template,
-			title = '',
-			uglify = true
+		dir,
+		inlineCss = true,
+		preload = true,
+		prod = false,
+		template,
+		title = '',
+		uglify = true
 	} = env;
 
 	const cssLoader = {
@@ -84,7 +84,6 @@ module.exports = (env = {}) => {
 					]
 			}, {
 				test: /\.js?/i,
-				exclude: /node_modules/,
 				loader: 'babel-loader',
 				options: {
 					babelrc: false,
