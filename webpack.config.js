@@ -19,6 +19,7 @@ module.exports = (env = {}) => {
 		analyze = false,
 		dir,
 		inlineCss = true,
+		moduleCss = true,
 		preload = true,
 		prod = false,
 		template,
@@ -29,12 +30,15 @@ module.exports = (env = {}) => {
 	const cssLoader = {
 		loader: 'css-loader',
 		options: {
-			minimize: true,
-			modules: true,
-			localIdentName: prod ?
-				'[hash:base64:5]' : '[local]__[hash:base64:5]',
-			importLoaders: 1,
-			sourceMap: !prod
+			minimize: prod ? {
+				discardComments: {
+					removeAll: true
+				}
+			} : false,
+			modules: moduleCss === true || moduleCss === 'true',
+			localIdentName: prod ? '[hash:base64:5]' : '[local]__[hash:base64:5]',
+			importLoaders: 5,
+			sourceMap: !prod,
 		}
 	};
 
@@ -55,13 +59,17 @@ module.exports = (env = {}) => {
 		entry: path.join(dir, 'src'),
 		output: {
 			path: path.join(dir, 'build'),
-			filename: '[name].[hash:5].js'
+			filename: '[name].[hash].js'
 		},
 		resolve: {
 			alias: {
 				asyncComponent: path.resolve(__dirname, './lib/asyncComponent'),
 				preact$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
-				h$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h')
+				h$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
+				//  preact-compat aliases for supporting React dependencies:
+				'react': 'preact-compat',
+				'react-dom': 'preact-compat',
+				'create-react-class': 'preact-compat/lib/create-react-class',
 			}
 		},
 		resolveLoader: {
@@ -72,16 +80,21 @@ module.exports = (env = {}) => {
 		module: {
 			rules: [{
 				test: /\.css|\.scss$/,
-				use: prod ?
-					ExtractTextPlugin.extract({
-						fallback: 'style-loader',
-						use: [cssLoader, postCssLoader, 'sass-loader']
-					}) : [
-						'style-loader',
+				use: prod ? ExtractTextPlugin.extract({
+					fallback: 'style-loader',
+					use: [
 						cssLoader,
+						'resolve-url-loader',
 						postCssLoader,
 						'sass-loader'
 					]
+				}) : [
+					'style-loader',
+					cssLoader,
+					'resolve-url-loader',
+					postCssLoader,
+					'sass-loader'
+				]
 			}, {
 				test: /\.js?/i,
 				loader: 'babel-loader',
@@ -154,8 +167,7 @@ module.exports = (env = {}) => {
 					removeComments: true
 				},
 				inlineSource: '.css$',
-				template: template ?
-					path.resolve(dir, template) : path.resolve(__dirname, './template.ejs')
+				template: template ? path.resolve(dir, template) : path.resolve(__dirname, './template.ejs')
 			}),
 			new HtmlWebpackExcludeAssetsPlugin(),
 			new webpack.DefinePlugin({
