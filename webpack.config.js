@@ -27,6 +27,7 @@ module.exports = (env = {}) => {
 		uglify = true
 	} = env;
 
+	const polyfillsExists = fs.existsSync(path.join(dir, 'polyfills'));
 	const cssLoader = {
 		loader: 'css-loader',
 		options: {
@@ -56,7 +57,12 @@ module.exports = (env = {}) => {
 	};
 
 	const config = {
-		entry: path.join(dir, 'src'),
+		entry: polyfillsExists ? {
+			main: path.join(dir, 'src'),
+			polyfills: path.join(dir, 'polyfills')
+		} : {
+			main: path.join(dir, 'src')
+		},
 		output: {
 			path: path.join(dir, 'build'),
 			filename: '[name].[hash].js'
@@ -158,7 +164,7 @@ module.exports = (env = {}) => {
 			new ExtractTextPlugin('style.[hash:5].css'),
 			new HTMLPlugin({
 				title: decodeURIComponent(title),
-				excludeAssets: [/main.*\.js$/],
+				excludeAssets: [/(main|polyfills).*\.js$/],
 				minify: {
 					collapseWhitespace: true,
 					removeScriptTypeAttributes: true,

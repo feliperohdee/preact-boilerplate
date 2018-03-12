@@ -6,7 +6,11 @@
 	</head>
 	<body>
 		<% _.forEach(htmlWebpackPlugin.files.js, value => { %>
-			<script defer src="/<%= value %>"></script>
+			<% if(_.includes(value, 'polyfills')) { %>
+				<script>window.fetch || document.write('<script src="<%= value %>"><\/script>')</script>
+			<% } else { %>
+				<script defer src="/<%= value %>"></script>
+			<% } %>
 		<% })%>
 	</body>
 </html>
