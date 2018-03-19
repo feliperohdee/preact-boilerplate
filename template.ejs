@@ -5,6 +5,7 @@
 		<title><%= htmlWebpackPlugin.options.title %></title>
 	</head>
 	<body>
+		<div></div>
 		<% _.forEach(htmlWebpackPlugin.files.js, value => { %>
 			<% if(_.includes(value, 'polyfills')) { %>
 				<script>window.fetch || document.write('<script src="<%= value %>"><\/script>')</script>

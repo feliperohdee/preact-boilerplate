@@ -17,14 +17,15 @@ const {
 module.exports = (env = {}) => {
 	const {
 		analyze = false,
-		dir,
-		inlineCss = true,
-		moduleCss = true,
-		preload = true,
-		prod = false,
-		template,
-		title = '',
-		uglify = true
+			dir,
+			inlineCss = true,
+			moduleCss = true,
+			react = false,
+			preload = true,
+			prod = false,
+			template,
+			title = '',
+			uglify = true
 	} = env;
 
 	const polyfillsExists = fs.existsSync(path.join(dir, 'polyfills'));
@@ -69,13 +70,16 @@ module.exports = (env = {}) => {
 		},
 		resolve: {
 			alias: {
-				asyncComponent: path.resolve(__dirname, './lib/asyncComponent'),
-				preact$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
-				h$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
-				//  preact-compat aliases for supporting React dependencies:
-				'react': 'preact-compat',
-				'react-dom': 'preact-compat',
-				'create-react-class': 'preact-compat/lib/create-react-class',
+				asyncComponent: react ? path.resolve(__dirname, './lib/reactAsyncComponent') : path.resolve(__dirname, './lib/preactAsyncComponent'),
+				...react ? {
+					react$: path.resolve(dir, 'node_modules/react')
+				} : {
+					preact$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
+					h$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
+					'react': 'preact-compat',
+					'react-dom': 'preact-compat',
+					'create-react-class': 'preact-compat/lib/create-react-class',
+				}
 			}
 		},
 		resolveLoader: {
@@ -137,9 +141,13 @@ module.exports = (env = {}) => {
 							loose: true
 						}],
 						['@babel/plugin-transform-react-jsx', {
-							pragma: 'h'
+							pragma: react ? 'createElement' : 'h'
 						}],
-						['babel-plugin-jsx-pragmatic', {
+						['babel-plugin-jsx-pragmatic', react ? {
+							module: 'react',
+							export: 'createElement',
+							import: 'createElement'
+						} : {
 							module: 'preact',
 							export: 'h',
 							import: 'h'
