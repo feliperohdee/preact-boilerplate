@@ -85,7 +85,20 @@ module.exports = (env = {}) => {
 		},
 		module: {
 			rules: [{
-				test: /\.css|\.scss$/,
+				test: /\.css$/,
+				use: prod ? ExtractTextPlugin.extract({
+					fallback: 'style-loader',
+					use: [
+						'css-loader',
+						'resolve-url-loader'
+					]
+				}) : [
+					'style-loader',
+					'css-loader',
+					'resolve-url-loader'
+				]
+			}, {
+				test: /\.scss$/,
 				use: prod ? ExtractTextPlugin.extract({
 					fallback: 'style-loader',
 					use: [
