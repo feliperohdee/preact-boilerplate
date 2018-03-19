@@ -17,15 +17,15 @@ const {
 module.exports = (env = {}) => {
 	const {
 		analyze = false,
-			dir,
-			inlineCss = true,
-			moduleCss = true,
-			react = false,
-			preload = true,
-			prod = false,
-			template,
-			title = '',
-			uglify = true
+		dir,
+		inlineCss = true,
+		moduleCss = true,
+		react = false,
+		preload = true,
+		prod = false,
+		template,
+		title = '',
+		uglify = true
 	} = env;
 
 	const polyfillsExists = fs.existsSync(path.join(dir, 'polyfills'));
@@ -72,10 +72,10 @@ module.exports = (env = {}) => {
 			alias: {
 				asyncComponent: react ? path.resolve(__dirname, './lib/reactAsyncComponent') : path.resolve(__dirname, './lib/preactAsyncComponent'),
 				...react ? {
-					react$: path.resolve(dir, 'node_modules/react')
+					'react$': path.resolve(dir, 'node_modules/react')
 				} : {
-					preact$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
-					h$: path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
+					'preact$': path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
+					'h$': path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
 					'react': 'preact-compat',
 					'react-dom': 'preact-compat',
 					'create-react-class': 'preact-compat/lib/create-react-class',
@@ -179,7 +179,8 @@ module.exports = (env = {}) => {
 			compress: false,
 			contentBase: path.join(dir, 'src'),
 			disableHostCheck: true,
-			historyApiFallback: true
+			historyApiFallback: true,
+			hot: true
 		},
 		plugins: [
 			new ExtractTextPlugin('style.[hash:5].css'),
@@ -198,12 +199,19 @@ module.exports = (env = {}) => {
 			}),
 			new HtmlWebpackExcludeAssetsPlugin(),
 			new webpack.DefinePlugin({
-				PRODUCTION: prod
+				'PRODUCTION': prod,
+				'process.env': {
+					NODE_ENV: JSON.stringify(prod ? 'production' : 'development'),
+				}
 			})
 		]
 	};
 
-	if (prod) {
+	if (!prod) {
+		config.plugins.push(
+			new webpack.NamedModulesPlugin()
+		);
+	} else {
 		if (analyze === true || analyze === 'true') {
 			config.plugins.push(new BundleAnalyzerPlugin());
 		}
