@@ -153,10 +153,11 @@ module.exports = (env = {}) => {
 							import: 'h'
 						}],
 						['@babel/plugin-transform-react-constant-elements'],
-						['transform-react-remove-prop-types'],
 						['@babel/plugin-proposal-export-default-from'],
 						['@babel/plugin-proposal-export-namespace-from']
-					]
+					].concat(prod ? [
+						'transform-react-remove-prop-types'
+					] : [])
 				}
 			}, {
 				test: /\.json$/,
