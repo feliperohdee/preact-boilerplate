@@ -150,9 +150,6 @@ module.exports = (env = {}) => {
 						rules: {
 							// http://eslint.org/docs/rules/
 							'array-callback-return': 'warn',
-							'default-case': ['warn', {
-								commentPattern: '^no default$'
-							}],
 							'comma-dangle': ['warn', 'never'],
 							'dot-location': ['warn', 'property'],
 							'eqeqeq': ['warn', 'allow-null'],
@@ -300,7 +297,6 @@ module.exports = (env = {}) => {
 							'react/no-deprecated': 'warn',
 							'react/no-direct-mutation-state': 'warn',
 							'react/no-is-mounted': 'warn',
-							// 'react/react-in-jsx-scope': 'error',
 							'react/require-render-return': 'error',
 							'react/style-prop-object': 'warn',
 							// https://github.com/evcohen/eslint-plugin-jsx-a11y/tree/master/docs/rules
