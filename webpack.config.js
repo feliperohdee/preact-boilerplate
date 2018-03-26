@@ -195,6 +195,9 @@ module.exports = (env = {}) => {
 								},
 							],
 							'no-multi-str': 'warn',
+							'no-multiple-empty-lines': ['warn', {
+								max: 1
+							}],
 							'no-native-reassign': 'warn',
 							'no-negated-in-lhs': 'warn',
 							'no-new-func': 'warn',
