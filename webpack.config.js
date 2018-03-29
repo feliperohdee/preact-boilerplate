@@ -95,7 +95,11 @@ module.exports = (env = {}) => {
 					use: [{
 							loader: 'css-loader',
 							options: {
-								minimize: true
+								minimize: {
+									discardComments: {
+										removeAll: true
+									}
+								}
 							}
 						},
 						'resolve-url-loader'
@@ -398,7 +402,7 @@ module.exports = (env = {}) => {
 			hot: true
 		},
 		plugins: [
-			new ExtractTextPlugin('style.[hash:5].css'),
+			new ExtractTextPlugin('style.[hash].css'),
 			new HTMLPlugin({
 				title: decodeURIComponent(title),
 				excludeAssets: [/(main|polyfills).*\.js$/],
