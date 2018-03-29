@@ -17,15 +17,15 @@ const {
 module.exports = (env = {}) => {
 	const {
 		analyze = false,
-		dir,
-		inlineCss = true,
-		moduleCss = true,
-		react = false,
-		preload = true,
-		prod = false,
-		template,
-		title = '',
-		uglify = true
+			dir,
+			inlineCss = true,
+			moduleCss = true,
+			react = false,
+			preload = true,
+			prod = false,
+			template,
+			title = '',
+			uglify = true
 	} = env;
 
 	const polyfillsExists = fs.existsSync(path.join(dir, 'polyfills'));
@@ -92,8 +92,12 @@ module.exports = (env = {}) => {
 				test: /\.css$/,
 				use: prod ? ExtractTextPlugin.extract({
 					fallback: 'style-loader',
-					use: [
-						'css-loader',
+					use: [{
+							loader: 'css-loader',
+							options: {
+								minimize: true
+							}
+						},
 						'resolve-url-loader'
 					]
 				}) : [
