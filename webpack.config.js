@@ -57,6 +57,10 @@ module.exports = (env = {}) => {
 		}
 	};
 
+	const favicon = (fs.existsSync(path.resolve(dir, 'build/assets/favicon.ico')) && path.resolve(dir, 'build/assets/favicon.ico')) ||
+		(fs.existsSync(path.resolve(__dirname, '../resources/favicon.ico')) && path.resolve(__dirname, '../resources/favicon.ico')) ||
+		'';
+
 	const config = {
 		entry: polyfillsExists ? {
 			main: path.join(dir, 'src'),
@@ -405,6 +409,7 @@ module.exports = (env = {}) => {
 			new ExtractTextPlugin('style.[hash].css'),
 			new HTMLPlugin({
 				title: decodeURIComponent(title),
+				favicon,
 				excludeAssets: [/(main|polyfills).*\.js$/],
 				minify: {
 					collapseWhitespace: true,
