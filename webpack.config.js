@@ -17,15 +17,15 @@ const {
 module.exports = (env = {}) => {
 	const {
 		analyze = false,
-			dir,
-			inlineCss = true,
-			moduleCss = true,
-			react = false,
-			preload = true,
-			prod = false,
-			template,
-			title = '',
-			uglify = true
+		dir,
+		inlineCss = true,
+		moduleCss = true,
+		react = false,
+		preload = true,
+		prod = false,
+		template,
+		title = '',
+		uglify = true
 	} = env;
 
 	const polyfillsExists = fs.existsSync(path.join(dir, 'polyfills'));
