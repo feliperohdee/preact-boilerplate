@@ -20,6 +20,14 @@
 	</head>
 	<body>
 		<div></div>
+		<noscript>
+			<div style="text-align: center;font-family:monospace;padding:10px;font-size:16px">
+				<h1>Too Bad!</h1>
+				<p>
+					Please enable Javascript.
+				</p>
+			</div>
+		</noscript>
 		<% _.forEach(files.js, file => { %>
 			<% if(_.includes(file, 'polyfills')) { %>
 				<script>window.fetch || document.write('<script src="<%= static + file %>"><\/script>')</script>
