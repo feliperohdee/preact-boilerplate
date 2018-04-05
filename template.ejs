@@ -1,18 +1,30 @@
+<% const isAsync = file => file.match(/\d+\.\w*\.(js|css)/g) !== null; %>
+<% const env = htmlWebpackPlugin.options.env; %>
+<% const title = htmlWebpackPlugin.options.title; %>
+<% const files = htmlWebpackPlugin.files; %>
+<% const asyncFiles = _.flatMap(webpack.chunks, chunk => _.filter(chunk.files, isAsync)); %>
+<% const static = PRODUCTION ? '/' : '/'; %>
 <!DOCTYPE html>
 <html>
 	<head>
 		<base href="/">
 		<meta charset="UTF-8">
-		<title><%= htmlWebpackPlugin.options.title %></title>
-		<link rel="shortcut icon" href="assets/favicon.ico"/>
+		<title><%= title %></title>
+		<link rel="shortcut icon" href="<%= static %>assets/favicon.ico"/>
+		<% _.forEach(asyncFiles, file => { %>
+			<link rel="preload" href="<%= static + file %>" as="<%= file.match(/\.css$/) ? 'style' : 'script' %>">
+		<% }) %>
+		<% !env.inlineCss && _.forEach(files.css, file => { %>
+			<link rel="stylesheet" href="<%= static + file %>">
+		<% })%>
 	</head>
 	<body>
 		<div></div>
-		<% _.forEach(htmlWebpackPlugin.files.js, value => { %>
-			<% if(_.includes(value, 'polyfills')) { %>
-				<script>window.fetch || document.write('<script src="<%= value %>"><\/script>')</script>
+		<% _.forEach(files.js, file => { %>
+			<% if(_.includes(file, 'polyfills')) { %>
+				<script>window.fetch || document.write('<script src="<%= static + file %>"><\/script>')</script>
 			<% } else { %>
-				<script defer src="/<%= value %>"></script>
+				<script defer src="<%= static + file %>"></script>
 			<% } %>
 		<% })%>
 	</body>

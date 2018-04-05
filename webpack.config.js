@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HTMLPlugin = require('html-webpack-plugin');
@@ -14,31 +15,46 @@ const {
 } = require('webpack-bundle-analyzer');
 
 module.exports = (env = {}) => {
-	const {
-		analyze = false,
-		dir,
-		inlineCss = true,
-		moduleCss = true,
-		react = false,
-		template,
-		title = '',
-		uglify = true
-	} = env;
+	env = _.defaults(env, {
+		analyze: false,
+		inlineCss: true,
+		moduleCss: true,
+		react: false,
+		title: '',
+		uglify: true
+	});
 
-	const prod = process.env.NODE_ENV === 'production';
-	const polyfillsExists = fs.existsSync(path.join(dir, 'polyfills'));
+	env = _.reduce(env, (reduction, value, key) => {
+		if(
+			key === 'analyze' ||
+			key === 'inlineCss' ||
+			key === 'moduleCss' ||
+			key === 'react' ||
+			key === 'uglify'
+		) {
+			value = value === true || value === 'true';
+		}
+
+		return {
+			...reduction,
+			[key]: value
+		};
+	}, {});
+
+	const PRODUCTION = process.env.NODE_ENV === 'production';
+	const polyfillsExists = fs.existsSync(path.join(env.dir, 'polyfills'));
 	const cssLoader = {
 		loader: 'css-loader',
 		options: {
-			minimize: prod ? {
+			minimize: PRODUCTION ? {
 				discardComments: {
 					removeAll: true
 				}
 			} : false,
-			modules: moduleCss === true || moduleCss === 'true',
-			localIdentName: prod ? '[hash:base64:5]' : '[local]__[hash:base64:5]',
+			modules: env.moduleCss,
+			localIdentName: PRODUCTION ? '[hash:base64:5]' : '[local]__[hash:base64:5]',
 			importLoaders: 5,
-			sourceMap: !prod,
+			sourceMap: !PRODUCTION,
 		}
 	};
 
@@ -57,23 +73,23 @@ module.exports = (env = {}) => {
 
 	const config = {
 		entry: polyfillsExists ? {
-			main: path.join(dir, 'src'),
-			polyfills: path.join(dir, 'polyfills')
+			main: path.join(env.dir, 'src'),
+			polyfills: path.join(env.dir, 'polyfills')
 		} : {
-			main: path.join(dir, 'src')
+			main: path.join(env.dir, 'src')
 		},
 		output: {
-			path: path.join(dir, 'build'),
+			path: path.join(env.dir, 'build'),
 			filename: '[name].[hash].js'
 		},
 		resolve: {
 			alias: {
-				asyncComponent: react ? path.resolve(__dirname, './lib/reactAsyncComponent') : path.resolve(__dirname, './lib/preactAsyncComponent'),
-				...react ? {
-					'react$': path.resolve(dir, 'node_modules/react')
+				asyncComponent: env.react ? path.resolve(__dirname, './lib/reactAsyncComponent') : path.resolve(__dirname, './lib/preactAsyncComponent'),
+				...env.react ? {
+					'react$': path.resolve(env.dir, 'node_modules/react')
 				} : {
-					'preact$': path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
-					'h$': path.resolve(dir, prod ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
+					'preact$': path.resolve(env.dir, PRODUCTION ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
+					'h$': path.resolve(env.dir, PRODUCTION ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
 					'react': 'preact-compat',
 					'react-dom': 'preact-compat',
 					'create-react-class': 'preact-compat/lib/create-react-class',
@@ -88,7 +104,7 @@ module.exports = (env = {}) => {
 		module: {
 			rules: [{
 				test: /\.css$/,
-				use: prod ? ExtractTextPlugin.extract({
+				use: PRODUCTION ? ExtractTextPlugin.extract({
 					fallback: 'style-loader',
 					use: [{
 							loader: 'css-loader',
@@ -109,7 +125,7 @@ module.exports = (env = {}) => {
 				]
 			}, {
 				test: /\.scss$/,
-				use: prod ? ExtractTextPlugin.extract({
+				use: PRODUCTION ? ExtractTextPlugin.extract({
 					fallback: 'style-loader',
 					use: [
 						cssLoader,
@@ -358,9 +374,9 @@ module.exports = (env = {}) => {
 							loose: true
 						}],
 						['@babel/plugin-transform-react-jsx', {
-							pragma: react ? 'createElement' : 'h'
+							pragma: env.react ? 'createElement' : 'h'
 						}],
-						['babel-plugin-jsx-pragmatic', react ? {
+						['babel-plugin-jsx-pragmatic', env.react ? {
 							module: 'react',
 							export: 'createElement',
 							import: 'createElement'
@@ -372,7 +388,7 @@ module.exports = (env = {}) => {
 						['@babel/plugin-transform-react-constant-elements'],
 						['@babel/plugin-proposal-export-default-from'],
 						['@babel/plugin-proposal-export-namespace-from']
-					].concat(prod ? [
+					].concat(PRODUCTION ? [
 						'transform-react-remove-prop-types'
 					] : [])
 				}
@@ -384,18 +400,18 @@ module.exports = (env = {}) => {
 				loader: 'raw-loader'
 			}, {
 				test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif|mp4|mov|ogg|webm|cur)(\?.*)?$/i,
-				loader: prod ? 'file-loader' : 'url-loader',
-				options: prod ? {
+				loader: PRODUCTION ? 'file-loader' : 'url-loader',
+				options: PRODUCTION ? {
 					outputPath: 'assets'
 				} : {}
 			}]
 		},
-		devtool: prod ? false : 'source-map',
+		devtool: PRODUCTION ? false : 'source-map',
 		devServer: {
 			port: process.env.PORT || 8080,
 			host: process.env.HOST || '0.0.0.0',
 			compress: false,
-			contentBase: path.join(dir, 'src'),
+			contentBase: path.join(env.dir, 'src'),
 			disableHostCheck: true,
 			historyApiFallback: true,
 			hot: true
@@ -403,8 +419,13 @@ module.exports = (env = {}) => {
 		plugins: [
 			new ExtractTextPlugin('style.[hash].css'),
 			new HTMLPlugin({
-				title: decodeURIComponent(title),
-				excludeAssets: [/(main|polyfills).*\.js$/],
+				title: decodeURIComponent(env.title),
+				excludeAssets: env.inlineCss ? [
+					/(main|polyfills).*\.js$/
+				] : [
+					/(main|polyfills).*\.js$/,
+					/.*\.css$/
+				],
 				minify: {
 					collapseWhitespace: true,
 					removeScriptTypeAttributes: true,
@@ -412,48 +433,49 @@ module.exports = (env = {}) => {
 					removeStyleLinkTypeAttributes: true,
 					removeComments: true
 				},
+				template: env.template ? path.resolve(env.dir, env.template) : path.resolve(__dirname, './template.ejs'),
 				inlineSource: '.css$',
-				template: template ? path.resolve(dir, template) : path.resolve(__dirname, './template.ejs')
+				env
 			}),
 			new HtmlWebpackExcludeAssetsPlugin(),
 			new webpack.DefinePlugin({
-				'PRODUCTION': prod,
+				'PRODUCTION': PRODUCTION,
 				'process.env':  JSON.stringify(process.env)
 			})
 		]
 	};
 
-	if (!prod) {
+	if (!PRODUCTION) {
 		config.plugins.push(
 			new webpack.NamedModulesPlugin()
 		);
 	} else {
-		if (analyze === true || analyze === 'true') {
+		if (env.analyze) {
 			config.plugins.push(new BundleAnalyzerPlugin());
 		}
 
-		if (inlineCss === true || inlineCss === 'true') {
+		if (env.inlineCss) {
 			config.plugins.push(new HtmlWebpackInlineSourcePlugin());
 		}
 
-		if (uglify === true || uglify === 'true') {
+		if (env.uglify) {
 			config.plugins.push(new UglifyJsPlugin());
 		}
 
-		const assetsDir = path.join(dir, 'src/assets');
+		const assetsDir = path.join(env.dir, 'src/assets');
 
 		if (fs.existsSync(assetsDir)) {
 			config.plugins.push(
 				new CopyWebpackPlugin([{
 					from: assetsDir,
-					to: path.join(dir, 'build/assets')
+					to: path.join(env.dir, 'build/assets')
 				}])
 			);
 		} else {
 			config.plugins.push(
 				new MakeDirWebpackPlugin({
 					dirs: [{
-						path: path.resolve(dir, 'build/assets')
+						path: path.resolve(env.dir, 'build/assets')
 					}]
 				})
 			);
