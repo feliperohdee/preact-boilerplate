@@ -5,14 +5,18 @@ Lightweight preact/react boilerplate with support for inline CSS, automatic code
 		## to build
 		./node_modules/preact-boilerplate/run build 
 			--env.title="Your%20Title" (required)
-			--env.analyze true (optional, default: false) // launch webpack module analyzer
-			--env.react true (optional, default: false) // support for react
-			--env.uglify true (optional, default: true)
+			--env.analyze {boolean} (optional, default: false) // launch webpack bundle analyzer
+			--env.react {boolean} (optional, default: false)
+			--env.uglify {boolean} (optional, default: true)
 			--env.template {string} (optional)
+			--env.inlineCss {boolean} (optional, default: true)
+			--env.moduleCss {boolean} (optional, default: true) // enable/disable css-loader.options.modules
 		
 		## to dev
 		./node_modules/preact-boilerplate/run dev 
 			--env.title="Your%20Title"
+			--env.react {boolean} (optional, default: false)
+			--env.template {string} (optional)
 
 		## sample
 		
@@ -54,6 +58,7 @@ Lightweight preact/react boilerplate with support for inline CSS, automatic code
 		export default () => {
 			return (
 				<section>
+					<h2>{process.env.NODE_ENV && 'production'} is production!</h2>
 					<h2>{PRODUCTION && 'production'} is production!</h2>
 					<img src={image} class={style.image}/>
 				</section>
