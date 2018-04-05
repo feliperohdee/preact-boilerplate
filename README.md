@@ -7,7 +7,6 @@ Lightweight preact/react boilerplate with support for inline CSS, automatic code
 			--env.title="Your%20Title" (required)
 			--env.analyze true (optional, default: false) // launch webpack module analyzer
 			--env.react true (optional, default: false) // support for react
-			--env.preload true (optional, default: true) // preload async scripts
 			--env.uglify true (optional, default: true)
 			--env.template {string} (optional)
 		

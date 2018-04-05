@@ -4,7 +4,6 @@ const HTMLPlugin = require('html-webpack-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin');
-const PreloadWebpackPlugin = require('preload-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const fs = require('fs');
@@ -21,13 +20,12 @@ module.exports = (env = {}) => {
 		inlineCss = true,
 		moduleCss = true,
 		react = false,
-		preload = true,
-		prod = false,
 		template,
 		title = '',
 		uglify = true
 	} = env;
 
+	const prod = process.env.NODE_ENV === 'production';
 	const polyfillsExists = fs.existsSync(path.join(dir, 'polyfills'));
 	const cssLoader = {
 		loader: 'css-loader',
@@ -153,6 +151,7 @@ module.exports = (env = {}) => {
 						},
 						globals: [
 							'PRODUCTION',
+							'SERVE',
 							'process',
 						],
 						rules: {
@@ -419,9 +418,7 @@ module.exports = (env = {}) => {
 			new HtmlWebpackExcludeAssetsPlugin(),
 			new webpack.DefinePlugin({
 				'PRODUCTION': prod,
-				'process.env': {
-					NODE_ENV: JSON.stringify(prod ? 'production' : 'development'),
-				}
+				'process.env':  JSON.stringify(process.env)
 			})
 		]
 	};
@@ -437,10 +434,6 @@ module.exports = (env = {}) => {
 
 		if (inlineCss === true || inlineCss === 'true') {
 			config.plugins.push(new HtmlWebpackInlineSourcePlugin());
-		}
-
-		if (preload === true || preload === 'true') {
-			config.plugins.push(new PreloadWebpackPlugin());
 		}
 
 		if (uglify === true || uglify === 'true') {
