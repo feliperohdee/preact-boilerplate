@@ -25,7 +25,7 @@ module.exports = (env = {}) => {
 	});
 
 	env = _.reduce(env, (reduction, value, key) => {
-		if(
+		if (
 			key === 'analyze' ||
 			key === 'inlineCss' ||
 			key === 'moduleCss' ||
@@ -440,13 +440,13 @@ module.exports = (env = {}) => {
 			new HtmlWebpackExcludeAssetsPlugin(),
 			new webpack.DefinePlugin({
 				'PRODUCTION': PRODUCTION,
-				'process.env':  JSON.stringify(_.reduce(process.env, (reduction, value, key) => {
-					if(_.startsWith(key, 'NODE_')) {
-						reduction[key] = value;
+				..._.reduce(process.env, (reduction, value, key) => {
+					if (_.startsWith(key, 'NODE_')) {
+						reduction[`process.env.${key}`] = JSON.stringify(value);
 					}
 
 					return reduction;
-				}, {}))
+				}, {})
 			})
 		]
 	};
