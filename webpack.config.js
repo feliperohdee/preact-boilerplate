@@ -440,7 +440,13 @@ module.exports = (env = {}) => {
 			new HtmlWebpackExcludeAssetsPlugin(),
 			new webpack.DefinePlugin({
 				'PRODUCTION': PRODUCTION,
-				'process.env':  JSON.stringify(process.env)
+				'process.env':  JSON.stringify(_.reduce(process.env, (reduction, value, key) => {
+					if(_.startsWith('NODE_')) {
+						reduction[key] = value;
+					}
+
+					return reduction;
+				}, {}))
 			})
 		]
 	};
