@@ -387,7 +387,8 @@ module.exports = (env = {}) => {
 						}],
 						['@babel/plugin-transform-react-constant-elements'],
 						['@babel/plugin-proposal-export-default-from'],
-						['@babel/plugin-proposal-export-namespace-from']
+						['@babel/plugin-proposal-export-namespace-from'],
+						['@babel/plugin-proposal-function-bind']
 					].concat(PRODUCTION ? [
 						'transform-react-remove-prop-types'
 					] : [])

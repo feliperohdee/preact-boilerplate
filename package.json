@@ -1,13 +1,14 @@
 {
   "name": "preact-boilerplate",
   "description": "Lightweight react/preact boilerplate with support for inline CSS, automatic code splitting and async scripts.",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.0.0-beta.44",
     "@babel/plugin-proposal-class-properties": "^7.0.0-beta.44",
     "@babel/plugin-proposal-export-default-from": "^7.0.0-beta.44",
     "@babel/plugin-proposal-export-namespace-from": "^7.0.0-beta.44",
+    "@babel/plugin-proposal-function-bind": "^7.0.0-beta.44",
     "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.44",
     "@babel/plugin-proposal-optional-chaining": "^7.0.0-beta.44",
     "@babel/plugin-transform-react-constant-elements": "^7.0.0-beta.44",
