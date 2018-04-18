@@ -110,28 +110,7 @@ module.exports = (env = {}) => {
         },
         module: {
             rules: [{
-                test: /\.css$/,
-                use: PRODUCTION ? ExtractTextPlugin.extract({
-                    fallback: 'style-loader',
-                    use: [{
-                            loader: 'css-loader',
-                            options: {
-                                minimize: {
-                                    discardComments: {
-                                        removeAll: true
-                                    }
-                                }
-                            }
-                        },
-                        'resolve-url-loader'
-                    ]
-                }) : [
-                    'style-loader',
-                    'css-loader',
-                    'resolve-url-loader'
-                ]
-            }, {
-                test: /^((?!\.?local).)*scss$/,
+                test: /^((?!\.?local).)*(scss|css)$/,
                 use: PRODUCTION ? ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [{
@@ -158,7 +137,7 @@ module.exports = (env = {}) => {
                     sassLoader
                 ]
             }, {
-                test: /\.local\.scss$/,
+                test: /\.local\.(scss|css)$/,
                 use: PRODUCTION ? ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [
