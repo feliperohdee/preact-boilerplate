@@ -10,7 +10,6 @@ Lightweight preact/react boilerplate with support for inline CSS, automatic code
 			--env.uglify {boolean} (optional, default: true)
 			--env.template {string} (optional)
 			--env.inlineCss {boolean} (optional, default: true)
-			--env.moduleCss {boolean} (optional, default: true) // enable/disable css-loader.options.modules
 		
 		## to dev
 		./node_modules/preact-boilerplate/run dev 
@@ -20,7 +19,8 @@ Lightweight preact/react boilerplate with support for inline CSS, automatic code
 
 		## sample
 		
-		import style from './index.scss';
+		// import style from './index.scss'; // global scoped css
+		import style from './index.local.scss'; // local scoped scss
 		import {
 			h,
 			render

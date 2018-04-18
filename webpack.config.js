@@ -18,7 +18,6 @@ module.exports = (env = {}) => {
     env = _.defaults(env, {
         analyze: false,
         inlineCss: true,
-        moduleCss: true,
         react: false,
         title: '',
         uglify: true
@@ -28,7 +27,6 @@ module.exports = (env = {}) => {
         if (
             key === 'analyze' ||
             key === 'inlineCss' ||
-            key === 'moduleCss' ||
             key === 'react' ||
             key === 'uglify'
         ) {
@@ -51,7 +49,7 @@ module.exports = (env = {}) => {
                     removeAll: true
                 }
             } : false,
-            modules: env.moduleCss,
+            modules: true,
             localIdentName: PRODUCTION ? '[hash:base64:5]' : '[local]__[hash:base64:5]',
             importLoaders: 5,
             sourceMap: !PRODUCTION,
@@ -133,7 +131,34 @@ module.exports = (env = {}) => {
                     'resolve-url-loader'
                 ]
             }, {
-                test: /\.scss$/,
+                test: /^((?!\.?local).)*scss$/,
+                use: PRODUCTION ? ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [{
+                            ...cssLoader,
+                            options: {
+                                ...cssLoader.options,
+                                modules: false
+                            }
+                        },
+                        'resolve-url-loader',
+                        postCssLoader,
+                        sassLoader
+                    ]
+                }) : [
+                    'style-loader', {
+                        ...cssLoader,
+                        options: {
+                            ...cssLoader.options,
+                            modules: false
+                        }
+                    },
+                    'resolve-url-loader',
+                    postCssLoader,
+                    sassLoader
+                ]
+            }, {
+                test: /\.local\.scss$/,
                 use: PRODUCTION ? ExtractTextPlugin.extract({
                     fallback: 'style-loader',
                     use: [
