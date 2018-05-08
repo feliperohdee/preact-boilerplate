@@ -3,7 +3,7 @@
 <% const title = htmlWebpackPlugin.options.title; %>
 <% const files = htmlWebpackPlugin.files; %>
 <% const asyncFiles = _.flatMap(webpack.chunks, chunk => _.filter(chunk.files, isAsync)); %>
-<% const static = PRODUCTION ? '/' : '/'; %>
+<% const static = PRODUCTION ? env.publicPath : '/'; %>
 <!DOCTYPE html>
 <html>
 	<head>

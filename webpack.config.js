@@ -18,6 +18,7 @@ module.exports = (env = {}) => {
     env = _.defaults(env, {
         analyze: false,
         inlineCss: true,
+        publicPath: '/',
         react: false,
         title: '',
         uglify: true
@@ -416,7 +417,8 @@ module.exports = (env = {}) => {
                 test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif|mp4|mov|ogg|webm|cur)(\?.*)?$/i,
                 loader: PRODUCTION ? 'file-loader' : 'url-loader',
                 options: PRODUCTION ? {
-                    outputPath: 'assets'
+                    outputPath: 'assets',
+                    publicPath: `${env.publicPath}assets`
                 } : {}
             }]
         },
