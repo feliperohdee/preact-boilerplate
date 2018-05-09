@@ -88,7 +88,8 @@ module.exports = (env = {}) => {
         },
         output: {
             path: path.join(env.dir, 'build'),
-            filename: '[name].[hash].js'
+            filename: '[name].[hash].js',
+            publicPath: env.publicPath
         },
         resolve: {
             alias: {

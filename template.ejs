@@ -12,10 +12,10 @@
 		<title><%= title %></title>
 		<link rel="shortcut icon" href="<%= static %>assets/favicon.ico"/>
 		<% _.forEach(asyncFiles, file => { %>
-			<link rel="preload" href="<%= static + file %>" as="<%= file.match(/\.css$/) ? 'style' : 'script' %>">
+			<link rel="preload" href="<%= file %>" as="<%= file.match(/\.css$/) ? 'style' : 'script' %>">
 		<% }) %>
 		<% !env.inlineCss && _.forEach(files.css, file => { %>
-			<link rel="stylesheet" href="<%= static + file %>">
+			<link rel="stylesheet" href="<%= file %>">
 		<% })%>
 	</head>
 	<body>
@@ -30,9 +30,9 @@
 		</noscript>
 		<% _.forEach(files.js, file => { %>
 			<% if(_.includes(file, 'polyfills')) { %>
-				<script>window.fetch || document.write('<script src="<%= static + file %>"><\/script>')</script>
+				<script>window.fetch || document.write('<script src="<%= file %>"><\/script>')</script>
 			<% } else { %>
-				<script defer src="<%= static + file %>"></script>
+				<script defer src="<%= file %>"></script>
 			<% } %>
 		<% })%>
 	</body>
