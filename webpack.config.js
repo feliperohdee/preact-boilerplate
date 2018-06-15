@@ -14,6 +14,9 @@ const {
     BundleAnalyzerPlugin
 } = require('webpack-bundle-analyzer');
 
+const babelPreact = require('./babel/preact');
+const babelReact = require('./babel/react');
+
 module.exports = (env = {}) => {
     env = _.defaults(env, {
         analyze: false,
@@ -79,6 +82,7 @@ module.exports = (env = {}) => {
         }
     };
 
+    const babel = env.react ? babelReact() : babelPreact();
     const config = {
         entry: polyfillsExists ? {
             main: path.join(env.dir, 'src'),
@@ -371,41 +375,9 @@ module.exports = (env = {}) => {
                 loader: 'babel-loader',
                 options: {
                     babelrc: false,
-                    presets: [
-                        ['@babel/preset-env', {
-                            targets: {
-                                browsers: [
-                                    '> 1%',
-                                    'IE >= 9',
-                                    'last 2 versions'
-                                ]
-                            }
-                        }]
-                    ],
-                    plugins: [
-                        ['@babel/plugin-proposal-class-properties'],
-                        ['@babel/plugin-proposal-object-rest-spread'],
-                        ['@babel/plugin-proposal-optional-chaining', {
-                            loose: true
-                        }],
-                        ['@babel/plugin-transform-react-jsx', {
-                            pragma: env.react ? 'createElement' : 'h'
-                        }],
-                        ['babel-plugin-jsx-pragmatic', env.react ? {
-                            module: 'react',
-                            export: 'createElement',
-                            import: 'createElement'
-                        } : {
-                            module: 'preact',
-                            export: 'h',
-                            import: 'h'
-                        }],
-                        ['@babel/plugin-transform-react-constant-elements'],
-                        ['@babel/plugin-proposal-export-default-from'],
-                        ['@babel/plugin-proposal-export-namespace-from'],
-                        ['@babel/plugin-proposal-function-bind']
-                    ].concat(PRODUCTION ? [
-                        'transform-react-remove-prop-types'
+                    presets: babel.presets,
+                    plugins: babel.plugins.concat(PRODUCTION ? [
+                        require.resolve('transform-react-remove-prop-types')
                     ] : [])
                 }
             }, {
@@ -456,7 +428,7 @@ module.exports = (env = {}) => {
             }),
             new HtmlWebpackExcludeAssetsPlugin(),
             new webpack.DefinePlugin({
-                'PRODUCTION': PRODUCTION,
+                PRODUCTION,
                 ..._.reduce(process.env, (reduction, value, key) => {
                     if (_.startsWith(key, 'NODE_')) {
                         reduction[`process.env.${key}`] = JSON.stringify(value);
