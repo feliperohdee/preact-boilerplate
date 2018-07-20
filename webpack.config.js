@@ -377,7 +377,7 @@ module.exports = (env = {}) => {
                     babelrc: false,
                     presets: babel.presets,
                     plugins: babel.plugins.concat(PRODUCTION ? [
-                        require.resolve('transform-react-remove-prop-types')
+                        'transform-react-remove-prop-types'
                     ] : [])
                 }
             }, {
