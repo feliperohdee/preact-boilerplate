@@ -388,7 +388,7 @@ module.exports = (env = {}) => {
                 loader: 'raw-loader'
             }, {
                 test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif|mp4|mov|ogg|webm|cur)(\?.*)?$/i,
-                loader: PRODUCTION ? 'file-loader' : 'url-loader',
+                loader: 'file-loader',
                 options: PRODUCTION ? {
                     outputPath: 'assets',
                     publicPath: `${env.publicPath}assets`
