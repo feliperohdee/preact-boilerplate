@@ -21,6 +21,7 @@ module.exports = (env = {}) => {
     env = _.defaults(env, {
         analyze: false,
         inlineCss: true,
+        inlineJs: false,
         publicPath: '/',
         react: false,
         title: '',
@@ -31,6 +32,7 @@ module.exports = (env = {}) => {
         if (
             key === 'analyze' ||
             key === 'inlineCss' ||
+            key === 'inlineJs' ||
             key === 'react' ||
             key === 'uglify'
         ) {
@@ -82,6 +84,18 @@ module.exports = (env = {}) => {
         }
     };
 
+    const excludeAssets = [];
+
+    if (env.inlineJs) {
+        excludeAssets.push(/(polyfills).*\.js$/);
+    } else {
+        excludeAssets.push(/(main|polyfills).*\.js$/);
+    }
+
+    if (!env.inlineCss) {
+        excludeAssets.push(/.*\.css$/);
+    }
+
     const babel = env.react ? babelReact() : babelPreact();
     const config = {
         entry: polyfillsExists ? {
@@ -111,7 +125,8 @@ module.exports = (env = {}) => {
         },
         resolveLoader: {
             alias: {
-                async: path.resolve(__dirname, './lib/asyncComponentLoader')
+                async: path.resolve(__dirname, './lib/asyncComponentLoader'),
+                'optimize-template-string-loader': path.join(__dirname, './lib/optimizeTemplateString.js'),
             }
         },
         module: {
@@ -372,6 +387,9 @@ module.exports = (env = {}) => {
                 }]
             }, {
                 test: /\.js?/i,
+                loader: 'optimize-template-string-loader'
+            }, {
+                test: /\.js?/i,
                 loader: 'babel-loader',
                 options: {
                     babelrc: false,
@@ -409,12 +427,7 @@ module.exports = (env = {}) => {
             new ExtractTextPlugin('style.[hash].css'),
             new HTMLPlugin({
                 title: decodeURIComponent(env.title),
-                excludeAssets: env.inlineCss ? [
-                    /(main|polyfills).*\.js$/
-                ] : [
-                    /(main|polyfills).*\.js$/,
-                    /.*\.css$/
-                ],
+                excludeAssets,
                 minify: {
                     collapseWhitespace: true,
                     removeScriptTypeAttributes: true,
@@ -423,7 +436,7 @@ module.exports = (env = {}) => {
                     removeComments: true
                 },
                 template: env.template ? path.resolve(env.dir, env.template) : path.resolve(__dirname, './template.ejs'),
-                inlineSource: '.css$',
+                inlineSource: '.(js|css)$',
                 env
             }),
             new HtmlWebpackExcludeAssetsPlugin(),
@@ -449,7 +462,7 @@ module.exports = (env = {}) => {
             config.plugins.push(new BundleAnalyzerPlugin());
         }
 
-        if (env.inlineCss) {
+        if (env.inlineCss || env.inlineJs) {
             config.plugins.push(new HtmlWebpackInlineSourcePlugin());
         }
 
