@@ -125,8 +125,7 @@ module.exports = (env = {}) => {
         },
         resolveLoader: {
             alias: {
-                async: path.resolve(__dirname, './lib/asyncComponentLoader'),
-                'optimize-template-string-loader': path.join(__dirname, './lib/optimizeTemplateString.js'),
+                async: path.resolve(__dirname, './lib/asyncComponentLoader')
             }
         },
         module: {
@@ -385,9 +384,6 @@ module.exports = (env = {}) => {
                         }
                     }
                 }]
-            }, {
-                test: /\.js?/i,
-                loader: 'optimize-template-string-loader'
             }, {
                 test: /\.js?/i,
                 loader: 'babel-loader',
