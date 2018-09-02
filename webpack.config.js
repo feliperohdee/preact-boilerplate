@@ -20,6 +20,7 @@ const babelReact = require('./babel/react');
 module.exports = (env = {}) => {
     env = _.defaults(env, {
         analyze: false,
+        flow: false,
         inlineCss: true,
         inlineJs: false,
         publicPath: '/',
@@ -31,6 +32,7 @@ module.exports = (env = {}) => {
     env = _.reduce(env, (reduction, value, key) => {
         if (
             key === 'analyze' ||
+            key === 'flow' ||
             key === 'inlineCss' ||
             key === 'inlineJs' ||
             key === 'react' ||
@@ -97,6 +99,11 @@ module.exports = (env = {}) => {
     }
 
     const babel = env.react ? babelReact() : babelPreact();
+
+    if(env.flow) {
+        babel.presets.unshift(require.resolve('@babel/preset-flow'));
+    }
+
     const config = {
         entry: polyfillsExists ? {
             main: path.join(env.dir, 'src'),
