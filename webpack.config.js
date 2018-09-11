@@ -408,7 +408,7 @@ module.exports = (env = {}) => {
                 test: /\.(xml|html|txt|md)$/,
                 loader: 'raw-loader'
             }, {
-                test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif|mp4|mov|ogg|webm|cur)(\?.*)?$/i,
+                test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif|mp4|mov|ogg|webm|cur|mp3|mp4)(\?.*)?$/i,
                 loader: 'file-loader',
                 options: PRODUCTION ? {
                     outputPath: 'assets',
