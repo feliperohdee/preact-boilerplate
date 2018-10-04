@@ -5,6 +5,7 @@ const HTMLPlugin = require('html-webpack-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin');
+const ReplacePlugin = require('webpack-plugin-replace');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const autoprefixer = require('autoprefixer');
 const fs = require('fs');
@@ -427,7 +428,13 @@ module.exports = (env = {}) => {
             hot: true
         },
         plugins: [
+            new webpack.NoEmitOnErrorsPlugin(),
             new ExtractTextPlugin('style.[hash].css'),
+            new webpack.optimize.CommonsChunkPlugin({
+				children: true,
+				async: false,
+				minChunks: 3
+			}),
             new HTMLPlugin({
                 title: decodeURIComponent(env.title),
                 excludeAssets,
@@ -458,7 +465,16 @@ module.exports = (env = {}) => {
 
     if (!PRODUCTION) {
         config.plugins.push(
-            new webpack.NamedModulesPlugin()
+            new webpack.optimize.ModuleConcatenationPlugin(),
+            new webpack.NamedModulesPlugin(),
+            // strip out babel-helper invariant checks
+			new ReplacePlugin({
+				include: /babel-helper$/,
+				patterns: [{
+					regex: /throw\s+(new\s+)?(Type|Reference)?Error\s*\(/g,
+					value: s => `return;${ Array(s.length-7).join(' ') }(`
+				}]
+			})
         );
     } else {
         if (env.analyze) {
