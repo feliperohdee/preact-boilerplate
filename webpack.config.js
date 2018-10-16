@@ -470,9 +470,7 @@ module.exports = (env = {}) => {
 
         if (lang) {
             config.plugins.push(
-                new I18nPlugin(require(path.join(env.dir, `i18n/${lang}.json`)), {
-                    nested: true
-                })
+                new I18nPlugin(require(path.join(env.dir, `i18n/${lang}.json`)))
             );
         }
 
