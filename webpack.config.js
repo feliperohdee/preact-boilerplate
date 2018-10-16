@@ -210,6 +210,7 @@ module.exports = (env = {}) => {
                                 }
                             },
                             globals: [
+                                '__',
                                 'PRODUCTION',
                                 'SERVE',
                                 'process',
@@ -439,7 +440,7 @@ module.exports = (env = {}) => {
                     minChunks: 3
                 }),
                 new HTMLPlugin({
-                    filename: lang ? `index.${lang}.html` : 'index.html',
+                    filename: PRODUCTION && lang ? `index.${lang}.html` : 'index.html',
                     title: decodeURIComponent(env.title),
                     excludeAssets,
                     minify: {
@@ -469,7 +470,9 @@ module.exports = (env = {}) => {
 
         if (lang) {
             config.plugins.push(
-                new I18nPlugin(require(path.join(env.dir, `i18n/${lang}.json`)))
+                new I18nPlugin(require(path.join(env.dir, `i18n/${lang}.json`)), {
+                    nested: true
+                })
             );
         }
 
