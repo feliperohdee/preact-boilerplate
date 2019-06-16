@@ -452,7 +452,10 @@ module.exports = (env = {}) => {
                     },
                     template: env.template ? path.resolve(env.dir, env.template) : path.resolve(__dirname, './template.ejs'),
                     inlineSource: '.(js|css)$',
-                    env
+                    env: {
+                        ...env,
+                        lang: lang || ''
+                    }
                 }),
                 new HtmlWebpackExcludeAssetsPlugin(),
                 new webpack.DefinePlugin({
