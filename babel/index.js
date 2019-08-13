@@ -19,6 +19,7 @@ module.exports = {
         [require.resolve('@babel/plugin-transform-react-constant-elements')],
         [require.resolve('@babel/plugin-proposal-export-default-from')],
         [require.resolve('@babel/plugin-proposal-export-namespace-from')],
-        [require.resolve('@babel/plugin-proposal-function-bind')]
+        [require.resolve('@babel/plugin-proposal-function-bind')],
+        [require.resolve('@babel/plugin-syntax-dynamic-import')]
     ]
 };
