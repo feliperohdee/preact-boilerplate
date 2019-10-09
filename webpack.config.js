@@ -1,16 +1,18 @@
 const _ = require('lodash');
+const autoprefixer = require('autoprefixer');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries');
+const fs = require('fs');
 const HTMLPlugin = require('html-webpack-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
-const MakeDirWebpackPlugin = require('make-dir-webpack-plugin');
 const I18nPlugin = require('i18n-webpack-plugin');
-const ReplacePlugin = require('webpack-plugin-replace');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const autoprefixer = require('autoprefixer');
-const fs = require('fs');
+const MakeDirWebpackPlugin = require('make-dir-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const path = require('path');
+const ReplacePlugin = require('webpack-plugin-replace');
+const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 const {
     BundleAnalyzerPlugin
@@ -22,24 +24,21 @@ const babelReact = require('./babel/react');
 module.exports = (env = {}) => {
     env = _.defaults(env, {
         analyze: false,
-        flow: false,
         inlineCss: true,
         inlineJs: false,
         i18n: '',
+        port: 8000,
         publicPath: '/',
         react: false,
-        title: '',
-        uglify: true
+        title: ''
     });
 
     env = _.reduce(env, (reduction, value, key) => {
         if (
             key === 'analyze' ||
-            key === 'flow' ||
             key === 'inlineCss' ||
             key === 'inlineJs' ||
-            key === 'react' ||
-            key === 'uglify'
+            key === 'react'
         ) {
             value = value === true || value === 'true';
         }
@@ -55,15 +54,12 @@ module.exports = (env = {}) => {
     const cssLoader = {
         loader: 'css-loader',
         options: {
-            minimize: PRODUCTION ? {
-                discardComments: {
-                    removeAll: true
-                }
-            } : false,
-            modules: true,
-            localIdentName: PRODUCTION ? '[hash:base64:5]' : '[local]__[hash:base64:5]',
             importLoaders: 5,
-            sourceMap: !PRODUCTION,
+            modules: {
+                mode: 'local',
+                localIdentName: PRODUCTION ? '[hash:base64:5]' : '[local]__[hash:base64:5]'
+            },
+            sourceMap: !PRODUCTION
         }
     };
 
@@ -74,7 +70,7 @@ module.exports = (env = {}) => {
             sourceMap: true,
             plugins: [
                 autoprefixer({
-                    browsers: ['> 1%', 'IE >= 9', 'last 2 versions']
+                    overrideBrowserslist: ['> 1%', 'IE >= 9', 'last 2 versions']
                 })
             ]
         }
@@ -83,9 +79,11 @@ module.exports = (env = {}) => {
     const sassLoader = {
         loader: 'sass-loader',
         options: {
-            includePaths: [
-                path.resolve(env.dir, 'node_modules')
-            ]
+            sassOptions: {
+                includePaths: [
+                    path.resolve(env.dir, 'node_modules')
+                ]
+            }
         }
     };
 
@@ -102,13 +100,17 @@ module.exports = (env = {}) => {
     }
 
     const babel = env.react ? babelReact() : babelPreact();
-
-    if (env.flow) {
-        babel.presets.unshift(require.resolve('@babel/preset-flow'));
-    }
-
     const config = lang => {
         const config = {
+            devServer: {
+                port: env.port,
+                host: '0.0.0.0',
+                compress: false,
+                contentBase: path.join(env.dir, 'src'),
+                disableHostCheck: true,
+                historyApiFallback: true
+            },
+            devtool: PRODUCTION ? false : 'source-map',
             entry: polyfillsExists ? {
                 main: path.join(env.dir, 'src'),
                 polyfills: path.join(env.dir, 'polyfills')
@@ -139,23 +141,22 @@ module.exports = (env = {}) => {
                     async: path.resolve(__dirname, './lib/asyncComponentLoader')
                 }
             },
+            mode: PRODUCTION ? 'production' : 'development',
             module: {
                 rules: [{
                     test: /^((?!\.?local).)*(scss|css)$/,
-                    use: PRODUCTION ? ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: [{
-                                ...cssLoader,
-                                options: {
-                                    ...cssLoader.options,
-                                    modules: false
-                                }
-                            },
-                            'resolve-url-loader',
-                            postCssLoader,
-                            sassLoader
-                        ]
-                    }) : [
+                    use: PRODUCTION ? [
+                        MiniCssExtractPlugin.loader, {
+                            ...cssLoader,
+                            options: {
+                                ...cssLoader.options,
+                                modules: false
+                            }
+                        },
+                        'resolve-url-loader',
+                        postCssLoader,
+                        sassLoader
+                    ] : [
                         'style-loader', {
                             ...cssLoader,
                             options: {
@@ -169,15 +170,13 @@ module.exports = (env = {}) => {
                     ]
                 }, {
                     test: /\.local\.(scss|css)$/,
-                    use: PRODUCTION ? ExtractTextPlugin.extract({
-                        fallback: 'style-loader',
-                        use: [
-                            cssLoader,
-                            'resolve-url-loader',
-                            postCssLoader,
-                            sassLoader
-                        ]
-                    }) : [
+                    use: PRODUCTION ? [
+                        MiniCssExtractPlugin.loader,
+                        cssLoader,
+                        'resolve-url-loader',
+                        postCssLoader,
+                        sassLoader
+                    ] : [
                         'style-loader',
                         cssLoader,
                         'resolve-url-loader',
@@ -191,9 +190,20 @@ module.exports = (env = {}) => {
                     use: [{
                         loader: 'eslint-loader',
                         options: {
+                            baseConfig: {
+                                settings: {
+                                    react: {
+                                        version: env.react ? 'detect' : 'preact'
+                                    }
+                                }
+                            },
                             root: true,
                             parser: 'babel-eslint',
-                            plugins: ['import', 'jsx-a11y', 'react'],
+                            plugins: [
+                                'import',
+                                'jsx-a11y',
+                                'react'
+                            ],
                             envs: [
                                 'browser',
                                 'commonjs',
@@ -212,7 +222,6 @@ module.exports = (env = {}) => {
                             globals: [
                                 '__',
                                 'PRODUCTION',
-                                'SERVE',
                                 'process',
                             ],
                             rules: {
@@ -421,23 +430,59 @@ module.exports = (env = {}) => {
                     } : {}
                 }]
             },
-            devtool: PRODUCTION ? false : 'source-map',
-            devServer: {
-                port: process.env.PORT || 8080,
-                host: process.env.HOST || '0.0.0.0',
-                compress: false,
-                contentBase: path.join(env.dir, 'src'),
-                disableHostCheck: true,
-                historyApiFallback: true,
-                hot: true
+            optimization: {
+                minimizer: PRODUCTION ? [
+                    new TerserPlugin({
+                        cache: true,
+                        parallel: true,
+                        terserOptions: {
+                            output: {
+                                comments: false
+                            },
+                            mangle: true,
+                            compress: {
+                                keep_fargs: false,
+                                pure_getters: true,
+                                hoist_funs: true,
+                                pure_funcs: [
+                                    'classCallCheck',
+                                    '_classCallCheck',
+                                    '_possibleConstructorReturn',
+                                    'Object.freeze',
+                                    'invariant',
+                                    'warning'
+                                ],
+                            },
+                        },
+                        sourceMap: true
+                    }),
+                    new OptimizeCssAssetsPlugin({
+                        cssProcessorOptions: {
+                            discardComments: {
+                                removeAll: true
+                            },
+                            // Fix keyframes in different CSS chunks minifying to colliding names:
+                            reduceIdents: false
+                        }
+                    })
+                ] : [],
+                splitChunks: {
+                    minChunks: 3
+                }
             },
             plugins: [
                 new webpack.NoEmitOnErrorsPlugin(),
-                new ExtractTextPlugin('style.[hash].css'),
-                new webpack.optimize.CommonsChunkPlugin({
-                    children: true,
-                    async: false,
-                    minChunks: 3
+                // Fix for https://github.com/webpack-contrib/mini-css-extract-plugin/issues/151
+                new FixStyleOnlyEntriesPlugin(),
+                new MiniCssExtractPlugin({
+                    filename: 'style.[hash].css',
+                    chunkFilename: 'style.[hash].chunk.css'
+                }),
+                new webpack.ProvidePlugin(env.react ? {
+                    createElement: ['react', 'createElement']
+                } : {
+                    h: ['preact', 'h'],
+                    Fragment: ['preact', 'Fragment']
                 }),
                 new HTMLPlugin({
                     filename: PRODUCTION && lang ? `index.${lang}.html` : 'index.html',
@@ -497,10 +542,6 @@ module.exports = (env = {}) => {
 
             if (env.inlineCss || env.inlineJs) {
                 config.plugins.push(new HtmlWebpackInlineSourcePlugin());
-            }
-
-            if (env.uglify) {
-                config.plugins.push(new UglifyJsPlugin());
             }
 
             const assetsDir = path.join(env.dir, 'src/assets');
