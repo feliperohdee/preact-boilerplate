@@ -184,7 +184,7 @@ module.exports = (env = {}) => {
                         sassLoader
                     ]
                 }, {
-                    test: /\.js$/,
+                    test: /\.jsx?$/,
                     enforce: 'pre',
                     exclude: /node_modules/,
                     use: [{
@@ -406,7 +406,7 @@ module.exports = (env = {}) => {
                         }
                     }]
                 }, {
-                    test: /\.jsx$/i,
+                    test: /\.jsx?$/,
                     loader: 'babel-loader',
                     options: {
                         babelrc: false,
