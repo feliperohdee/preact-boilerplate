@@ -406,7 +406,7 @@ module.exports = (env = {}) => {
                         }
                     }]
                 }, {
-                    test: /\.js?/i,
+                    test: /\.jsx$/i,
                     loader: 'babel-loader',
                     options: {
                         babelrc: false,
@@ -415,9 +415,6 @@ module.exports = (env = {}) => {
                             'transform-react-remove-prop-types'
                         ] : [])
                     }
-                }, {
-                    test: /\.json$/,
-                    loader: 'json-loader'
                 }, {
                     test: /\.(xml|html|txt|md)$/,
                     loader: 'raw-loader'

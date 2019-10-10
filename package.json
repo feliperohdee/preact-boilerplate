@@ -1,7 +1,7 @@
 {
   "name": "preact-boilerplate",
   "description": "Lightweight react/preact boilerplate with support for inline CSS, automatic code splitting and async scripts.",
-  "version": "1.0.14",
+  "version": "2.0.0",
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.6.3",
@@ -33,7 +33,6 @@
     "html-webpack-inline-source-plugin": "^0.0.10",
     "html-webpack-plugin": "^3.2.0",
     "i18n-webpack-plugin": "^1.0.0",
-    "json-loader": "^0.5.7",
     "loader-utils": "^1.2.3",
     "lodash": "^4.17.15",
     "make-dir-webpack-plugin": "^0.1.0",
