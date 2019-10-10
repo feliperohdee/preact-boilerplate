@@ -128,11 +128,7 @@ module.exports = (env = {}) => {
                     ...env.react ? {
                         'react$': path.resolve(env.dir, 'node_modules/react')
                     } : {
-                        'preact$': path.resolve(env.dir, PRODUCTION ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact'),
-                        'h$': path.resolve(env.dir, PRODUCTION ? 'node_modules/preact/dist/preact.min.js' : 'node_modules/preact/h'),
-                        'react': 'preact-compat',
-                        'react-dom': 'preact-compat',
-                        'create-react-class': 'preact-compat/lib/create-react-class',
+                        'preact$': path.resolve(env.dir, 'node_modules/preact')
                     }
                 }
             },
