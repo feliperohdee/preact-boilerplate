@@ -3,7 +3,7 @@ CMD=$1
 DIR=$PWD
 
 if [ "$CMD" = "build" ]; then
-	cd node_modules/preact-boilerplate && rm -rf $DIR/build && NODE_ENV=production node_modules/.bin/webpack --env.dir=$DIR ${@:2}
+	cd node_modules/preact-boilerplate && rm -rf $DIR/build && NODE_ENV=production node_modules/.bin/webpack --env.dir=$DIR --progress ${@:2}
 else
-	cd node_modules/preact-boilerplate && node_modules/.bin/webpack-dev-server -d --progress --hot --inline --env.dir=$DIR ${@:2}
+	cd node_modules/preact-boilerplate && node_modules/.bin/webpack-dev-server --env.dir=$DIR --progress ${@:2}
 fi
