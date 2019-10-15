@@ -1,7 +1,7 @@
 {
   "name": "preact-boilerplate",
   "description": "Lightweight react/preact boilerplate with support for inline CSS, automatic code splitting and async scripts.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.6.3",
