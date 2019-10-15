@@ -104,7 +104,7 @@ module.exports = (env = {}) => {
         const config = {
             devServer: {
                 port: env.port,
-                host: '0.0.0.0',
+                host: 'localhost',
                 compress: false,
                 contentBase: path.join(env.dir, 'src'),
                 disableHostCheck: true,
