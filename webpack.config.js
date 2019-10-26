@@ -469,7 +469,7 @@ module.exports = (env = {}) => {
                 new FixStyleOnlyEntriesPlugin(),
                 new MiniCssExtractPlugin({
                     filename: 'style.[hash].css',
-                    chunkFilename: 'style.[hash].chunk.css'
+                    chunkFilename: '[id].[hash].chunk.css'
                 }),
                 new webpack.ProvidePlugin(env.react ? {
                     createElement: ['react', 'createElement']
