@@ -128,7 +128,9 @@ module.exports = (env = {}) => {
                     ...env.react ? {
                         'react$': path.resolve(env.dir, 'node_modules/react')
                     } : {
-                        'preact$': path.resolve(env.dir, 'node_modules/preact')
+                        'preact$': path.resolve(env.dir, 'node_modules/preact'),
+                        'react': path.resolve(env.dir, 'node_modules/preact/compat'),
+                        'react-dom': path.resolve(env.dir, 'node_modules/preact/compat')
                     }
                 }
             },
