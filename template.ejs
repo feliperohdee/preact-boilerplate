@@ -31,7 +31,7 @@
 		<% _.forEach(files.js, file => { %>
 			<% if(_.includes(file, 'polyfills')) { %>
 				<script>window.fetch || document.write('<script src="<%= file %>"><\/script>')</script>
-			<% } else if(!env.inlineJs) { %>
+			<% } else { %>
 				<script defer src="<%= file %>"></script>
 			<% } %>
 		<% })%>

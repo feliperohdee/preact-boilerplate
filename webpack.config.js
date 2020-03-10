@@ -25,7 +25,6 @@ module.exports = (env = {}) => {
     env = _.defaults(env, {
         analyze: false,
         inlineCss: true,
-        inlineJs: false,
         i18n: '',
         port: 8000,
         publicPath: '/',
@@ -37,7 +36,6 @@ module.exports = (env = {}) => {
         if (
             key === 'analyze' ||
             key === 'inlineCss' ||
-            key === 'inlineJs' ||
             key === 'react'
         ) {
             value = value === true || value === 'true';
@@ -87,13 +85,9 @@ module.exports = (env = {}) => {
         }
     };
 
-    const excludeAssets = [];
-
-    if (env.inlineJs) {
-        excludeAssets.push(/(polyfills).*\.js$/);
-    } else {
-        excludeAssets.push(/(main|polyfills).*\.js$/);
-    }
+    const excludeAssets = [
+        /(main|polyfills).*\.js$/
+    ];
 
     if (!env.inlineCss) {
         excludeAssets.push(/.*\.css$/);
@@ -535,7 +529,7 @@ module.exports = (env = {}) => {
                 config.plugins.push(new BundleAnalyzerPlugin());
             }
 
-            if (env.inlineCss || env.inlineJs) {
+            if (env.inlineCss) {
                 config.plugins.push(new HtmlWebpackInlineSourcePlugin());
             }
 
