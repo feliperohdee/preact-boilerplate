@@ -505,11 +505,9 @@ module.exports = (env = {}) => {
             ]
         };
 
-        if (lang) {
-            config.plugins.push(
-                new I18nPlugin(require(path.join(env.dir, `i18n/${lang}.json`)))
-            );
-        }
+        config.plugins.push(
+            new I18nPlugin(require(path.join(env.dir, lang ? `i18n/${lang}.json` : `i18n/default.json`)))
+        );
 
         if (!PRODUCTION) {
             config.plugins.push(
