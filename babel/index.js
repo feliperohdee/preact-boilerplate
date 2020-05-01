@@ -11,7 +11,7 @@ module.exports = {
                     'last 2 opera version',
                     'last 2 safari version',
                     'last 2 samsung version',
-                    'last 2 ucandroid version',
+                    'last 2 ucandroid version'
                 ]
             },
             exclude: [
