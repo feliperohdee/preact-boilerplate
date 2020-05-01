@@ -104,7 +104,7 @@ module.exports = (env = {}) => {
                 disableHostCheck: true,
                 historyApiFallback: true
             },
-            devtool: PRODUCTION ? false : 'source-map',
+            devtool: PRODUCTION ? false : 'eval',
             entry: polyfillsExists ? {
                 main: path.join(env.dir, 'src'),
                 polyfills: path.join(env.dir, 'polyfills')
