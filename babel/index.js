@@ -3,10 +3,20 @@ module.exports = {
         [require.resolve('@babel/preset-env'), {
             targets: {
                 browsers: [
-                    '> 1%',
-                    'last 2 versions'
+                    'last 2 chrome version',
+                    'last 2 chromeandroid version',
+                    'last 2 firefox version',
+                    'last 2 firefoxandroid version',
+                    'last 2 ios version',
+                    'last 2 opera version',
+                    'last 2 safari version',
+                    'last 2 samsung version',
+                    'last 2 ucandroid version',
                 ]
-            }
+            },
+            exclude: [
+                '@babel/plugin-transform-regenerator'
+            ]
         }]
     ],
     plugins: [
