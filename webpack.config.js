@@ -495,7 +495,10 @@ module.exports = (env = {}) => {
                 new webpack.DefinePlugin({
                     'PRODUCTION': PRODUCTION,
                     ..._.reduce(process.env, (reduction, value, key) => {
-                        if (_.startsWith(key, 'NODE_')) {
+                        if (
+                            _.startsWith(key, 'NODE_') ||
+                            _.startsWith(key, 'PROJECT_')
+                        ) {
                             reduction[`process.env.${key}`] = JSON.stringify(value);
                         }
 
