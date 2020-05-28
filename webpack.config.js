@@ -27,7 +27,7 @@ module.exports = (env = {}) => {
         inlineCss: true,
         i18n: '',
         port: 8000,
-        publicPath: '/',
+        publicPath: './',
         react: false,
         title: ''
     });
@@ -104,7 +104,7 @@ module.exports = (env = {}) => {
                 disableHostCheck: true,
                 historyApiFallback: true
             },
-            devtool: PRODUCTION ? false : 'eval',
+            devtool: PRODUCTION ? false : 'eval-cheap-source-map',
             entry: polyfillsExists ? {
                 main: path.join(env.dir, 'src'),
                 polyfills: path.join(env.dir, 'polyfills')
