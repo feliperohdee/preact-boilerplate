@@ -27,7 +27,7 @@ module.exports = (env = {}) => {
         inlineCss: true,
         i18n: '',
         port: 8000,
-        publicPath: './',
+        publicPath: '/',
         react: false,
         title: ''
     });
