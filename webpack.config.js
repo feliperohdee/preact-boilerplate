@@ -178,7 +178,6 @@ module.exports = (env = {}) => {
                 }, {
                     test: /\.jsx?$/,
                     enforce: 'pre',
-                    include: path.resolve(__dirname), // <-- This tell to eslint to look only in your project folder
                     exclude: /node_modules/,
                     use: [{
                         loader: 'eslint-loader',
