@@ -67,7 +67,7 @@ module.exports = (env = {}) => {
         options: {
             ident: 'postcss',
             sourceMap: true,
-            plugins: _.map(env.postCssPlugins.split(','), plugin => {
+            plugins: _.map(env.postCssPlugins.split(',').filter(Boolean), plugin => {
                     return require(path.join(env.dir, 'node_modules', _.trim(plugin)));
                 })
                 .concat([
