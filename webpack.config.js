@@ -27,6 +27,7 @@ module.exports = (env = {}) => {
         inlineCss: true,
         i18n: '',
         port: 8000,
+        postCssPlugins: '',
         publicPath: '/',
         react: false,
         title: ''
@@ -66,11 +67,14 @@ module.exports = (env = {}) => {
         options: {
             ident: 'postcss',
             sourceMap: true,
-            plugins: [
-                autoprefixer({
-                    overrideBrowserslist: ['> 1%', 'IE >= 9', 'last 2 versions']
+            plugins: _.map(env.postCssPlugins.split(','), plugin => {
+                    return require(path.join(env.dir, 'node_modules', _.trim(plugin)));
                 })
-            ]
+                .concat([
+                    autoprefixer({
+                        overrideBrowserslist: ['> 1%', 'IE >= 9', 'last 2 versions']
+                    })
+                ])
         }
     };
 
