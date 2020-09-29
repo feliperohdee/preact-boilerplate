@@ -3,7 +3,7 @@ CMD=$1
 DIR=$PWD
 
 if [ "$CMD" = "build" ]; then
-	cd node_modules/preact-boilerplate && rm -rf $DIR/build && NODE_ENV=production node_modules/.bin/webpack --env.dir=$DIR --progress ${@:2}
+	cd node_modules/preact-boilerplate && rm -rf $DIR/build && NODE_ENV=production node --max-old-space-size=2048 node_modules/.bin/webpack --env.dir=$DIR --progress ${@:2}
 else
-	cd node_modules/preact-boilerplate && node_modules/.bin/webpack-dev-server --env.dir=$DIR --progress --open ${@:2}
+	cd node_modules/preact-boilerplate && node --max-old-space-size=2048 node_modules/.bin/webpack-dev-server --env.dir=$DIR --progress --open ${@:2}
 fi
