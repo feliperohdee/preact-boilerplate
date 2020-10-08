@@ -215,7 +215,8 @@ module.exports = (env = {}) => {
                             plugins: [
                                 'import',
                                 'jsx-a11y',
-                                'react'
+                                'react',
+                                'react-hooks',
                             ],
                             envs: [
                                 'browser',
@@ -392,6 +393,9 @@ module.exports = (env = {}) => {
                                 'react/no-is-mounted': 'warn',
                                 'react/require-render-return': 'error',
                                 'react/style-prop-object': 'warn',
+                                // https://github.com/facebook/react/tree/master/packages/eslint-plugin-react-hooks
+                                'react-hooks/rules-of-hooks': 'error',
+                                'react-hooks/exhaustive-deps': 'warn',
                                 // https://github.com/evcohen/eslint-plugin-jsx-a11y/tree/master/docs/rules
                                 'jsx-a11y/accessible-emoji': 'warn',
                                 'jsx-a11y/alt-text': 'warn',

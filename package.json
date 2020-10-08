@@ -26,6 +26,7 @@
         "eslint-plugin-import": "^2.18.2",
         "eslint-plugin-jsx-a11y": "^6.2.3",
         "eslint-plugin-react": "^7.16.0",
+        "eslint-plugin-react-hooks": "^4.1.2",
         "file-loader": "^4.2.0",
         "html-webpack-exclude-assets-plugin": "^0.0.7",
         "html-webpack-inline-source-plugin": "^0.0.10",
