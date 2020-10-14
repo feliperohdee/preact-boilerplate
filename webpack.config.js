@@ -28,7 +28,7 @@ module.exports = (env = {}) => {
         i18n: '',
         port: 8000,
         postCssPlugins: '',
-        publicPath: '/',
+        publicPath: '',
         react: false,
         title: ''
     });
