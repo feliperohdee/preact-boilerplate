@@ -22,13 +22,15 @@ const babelPreact = require('./babel/preact');
 const babelReact = require('./babel/react');
 
 module.exports = (env = {}) => {
+    const PRODUCTION = process.env.NODE_ENV === 'production';
+
     env = _.defaults(env, {
         analyze: false,
         inlineCss: true,
         i18n: '',
         port: 8000,
         postCssPlugins: '',
-        publicPath: '',
+        publicPath: PRODUCTION ? '' : '/',
         react: false,
         title: ''
     });
@@ -48,7 +50,6 @@ module.exports = (env = {}) => {
         };
     }, {});
 
-    const PRODUCTION = process.env.NODE_ENV === 'production';
     const polyfillsExists = fs.existsSync(path.join(env.dir, 'polyfills'));
     const cssLoader = {
         loader: 'css-loader',
