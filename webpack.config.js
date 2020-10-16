@@ -522,8 +522,8 @@ module.exports = (env = {}) => {
                     'PRODUCTION': PRODUCTION,
                     ..._.reduce(process.env, (reduction, value, key) => {
                         if (
-                            _.startsWith(key, 'NODE_') ||
-                            _.startsWith(key, 'PROJECT_')
+                            _.startsWith(key, 'APP_') ||
+                            _.startsWith(key, 'NODE_')
                         ) {
                             reduction[`process.env.${key}`] = JSON.stringify(value);
                         }
