@@ -1,12 +1,12 @@
 const _ = require('lodash');
 const autoprefixer = require('autoprefixer');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const EmbedI18nWebpackPlugin = require('embed-i18n-webpack-plugin');
 const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries');
 const fs = require('fs');
-const HTMLPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
-const I18nPlugin = require('i18n-webpack-plugin');
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -29,7 +29,7 @@ module.exports = (env = {}) => {
         inlineCss: true,
         i18n: '',
         port: 8000,
-        postCssPlugins: '',
+        postCssConfig: false,
         publicPath: PRODUCTION ? '' : '/',
         react: false,
         title: ''
@@ -50,6 +50,10 @@ module.exports = (env = {}) => {
         };
     }, {});
 
+    if (fs.existsSync(path.join(env.dir, 'postcss.config.js'))) {
+        env.postCssConfig = 'postcss.config.js';
+    }
+    
     const polyfillsExists = fs.existsSync(path.join(env.dir, 'polyfills'));
     const cssLoader = {
         loader: 'css-loader',
@@ -66,33 +70,15 @@ module.exports = (env = {}) => {
     const postCssLoader = {
         loader: 'postcss-loader',
         options: {
-            ident: 'postcss',
-            sourceMap: true,
-            plugins: _.map(env.postCssPlugins.split(',').filter(Boolean), plugin => {
-                    let [
-                        file,
-                        ...args
-                    ] = plugin.split(':');
-
-                    let r = require(path.join(env.dir, 'node_modules', _.trim(file)));
-
-                    if (_.size(args)) {
-                        args = _.map(args, arg => {
-                            return _.template(arg)({
-                                dir: env.dir
-                            });
-                        });
-
-                        return r(...args);
-                    }
-
-                    return r;
-                })
-                .concat([
+            postcssOptions: {
+                config: _.isString(env.postCssConfig) ? path.join(env.dir, env.postCssConfig) : env.postCssConfig,
+                plugins: [
                     autoprefixer({
                         overrideBrowserslist: ['> 1%', 'IE >= 9', 'last 2 versions']
                     })
-                ])
+                ]
+            },
+            sourceMap: true
         }
     };
 
@@ -446,6 +432,7 @@ module.exports = (env = {}) => {
                 }]
             },
             optimization: {
+                minimize: PRODUCTION,
                 minimizer: PRODUCTION ? [
                     new TerserPlugin({
                         cache: true,
@@ -499,7 +486,7 @@ module.exports = (env = {}) => {
                     h: ['preact', 'h'],
                     Fragment: ['preact', 'Fragment']
                 }),
-                new HTMLPlugin({
+                new HtmlWebpackPlugin({
                     filename: PRODUCTION && lang ? `index.${lang}.html` : 'index.html',
                     title: decodeURIComponent(env.title),
                     excludeAssets,
@@ -535,7 +522,7 @@ module.exports = (env = {}) => {
         };
 
         config.plugins.push(
-            new I18nPlugin(require(path.join(env.dir, lang ? `i18n/${lang}.json` : `i18n/default.json`)))
+            new EmbedI18nWebpackPlugin(require(path.join(env.dir, lang ? `i18n/${lang}.json` : `i18n/default.json`)))
         );
 
         if (!PRODUCTION) {
@@ -564,10 +551,12 @@ module.exports = (env = {}) => {
 
             if (fs.existsSync(assetsDir)) {
                 config.plugins.push(
-                    new CopyWebpackPlugin([{
-                        from: assetsDir,
-                        to: path.join(env.dir, 'build/assets')
-                    }])
+                    new CopyWebpackPlugin({
+                        patterns: [{
+                            from: assetsDir,
+                            to: path.join(env.dir, 'build/assets')
+                        }]
+                    })
                 );
             } else {
                 config.plugins.push(
