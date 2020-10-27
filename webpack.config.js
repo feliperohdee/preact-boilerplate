@@ -1,12 +1,12 @@
 const _ = require('lodash');
 const autoprefixer = require('autoprefixer');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const EmbedI18nWebpackPlugin = require('embed-i18n-webpack-plugin');
 const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries');
 const fs = require('fs');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackExcludeAssetsPlugin = require('html-webpack-exclude-assets-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const I18nWebpackPlugin = require('i18n-webpack-plugin');
 const MakeDirWebpackPlugin = require('make-dir-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -26,8 +26,11 @@ module.exports = (env = {}) => {
 
     env = _.defaults(env, {
         analyze: false,
+        bundle: false,
+        hashed: true,
         inlineCss: false,
         i18n: '',
+        minimize: PRODUCTION,
         port: 8000,
         postCssConfig: false,
         publicPath: PRODUCTION ? '' : '/',
@@ -38,7 +41,10 @@ module.exports = (env = {}) => {
     env = _.reduce(env, (reduction, value, key) => {
         if (
             key === 'analyze' ||
+            key === 'bundle' ||
+            key === 'hashed' ||
             key === 'inlineCss' ||
+            key === 'minimize' ||
             key === 'react'
         ) {
             value = value === true || value === 'true';
@@ -95,11 +101,11 @@ module.exports = (env = {}) => {
     };
 
     const excludeAssets = [
-        /(common|main|vendor|polyfills).*\.js$/
+        /(bundle|common|main|vendor|polyfills).*\.js/
     ];
 
     if (!env.inlineCss) {
-        excludeAssets.push(/.*\.css$/);
+        excludeAssets.push(/.*\.css/);
     }
 
     const babel = env.react ? babelReact() : babelPreact();
@@ -125,7 +131,7 @@ module.exports = (env = {}) => {
             },
             output: {
                 path: path.join(env.dir, 'build'),
-                filename: lang ? `[name].[hash].${lang}.js` : '[name].[hash].js',
+                filename: env.hashed ? (lang ? `[name].[hash].${lang}.js` : '[name].[hash].js') : (lang ? `[name].${lang}.js?v=[hash]` : '[name].js?v=[hash]'),
                 publicPath: env.publicPath
             },
             resolve: {
@@ -419,8 +425,8 @@ module.exports = (env = {}) => {
                 }]
             },
             optimization: {
-                minimize: PRODUCTION,
-                minimizer: PRODUCTION ? [
+                minimize: env.minimize,
+                minimizer: env.minimize ? [
                     new TerserPlugin({
                         cache: true,
                         parallel: true,
@@ -456,12 +462,21 @@ module.exports = (env = {}) => {
                     })
                 ] : [],
                 splitChunks: {
-                    minChunks: 3,
                     cacheGroups: {
+                        ...env.bundle ? {
+                            bundle: {
+                                minChunks: 1,
+                                name: 'bundle',
+                                chunks: 'initial',
+                                test: /node_modules/,
+                                priority: 10
+                            }
+                        } : {},
                         common: {
                             minChunks: 2,
                             name: 'common',
-                            chunks: 'initial'
+                            chunks: 'initial',
+                            priority: 20
                         }
                     }
                 }
@@ -471,8 +486,8 @@ module.exports = (env = {}) => {
                 // Fix for https://github.com/webpack-contrib/mini-css-extract-plugin/issues/151
                 new FixStyleOnlyEntriesPlugin(),
                 new MiniCssExtractPlugin({
-                    filename: 'style.[hash].css',
-                    chunkFilename: '[id].[hash].chunk.css'
+                    filename: env.hashed ? 'style.[hash].css' : 'style.css?v=[hash]',
+                    chunkFilename: env.hashed ? '[id].[hash].chunk.css' : '[id].chunk.css?v=[hash]'
                 }),
                 new webpack.ProvidePlugin(env.react ? {
                     createElement: ['react', 'createElement']
@@ -516,7 +531,7 @@ module.exports = (env = {}) => {
         };
 
         config.plugins.push(
-            new EmbedI18nWebpackPlugin(require(path.join(env.dir, lang ? `i18n/${lang}.json` : `i18n/default.json`)))
+            new I18nWebpackPlugin(require(path.join(env.dir, lang ? `i18n/${lang}.json` : `i18n/default.json`)))
         );
 
         if (!PRODUCTION) {
@@ -563,11 +578,17 @@ module.exports = (env = {}) => {
             }
         }
 
+        const webpackConfigExists = fs.existsSync(path.join(env.dir, 'webpack.config.js'));
+
+        if (webpackConfigExists) {
+            return require(path.join(env.dir, 'webpack.config.js'))(config, lang || '');
+        }
+
         return config;
     };
 
     if (env.i18n) {
-        return _.map(env.i18n.split(','), config);
+        return _.flatMap(env.i18n.split(','), config);
     }
 
     return config();

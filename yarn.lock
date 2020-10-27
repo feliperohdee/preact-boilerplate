@@ -2971,11 +2971,6 @@ elliptic@^6.5.3:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.0"
 
-embed-i18n-webpack-plugin@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/embed-i18n-webpack-plugin/-/embed-i18n-webpack-plugin-1.0.1.tgz#cf11fae6002e882f5bf98444bae47e19673c73d6"
-  integrity sha512-GMAEqNkLYpmMnjo5k7IGhBGo5lOX3Sl3vuAR4m7AbGWs89vmJD+xLc7AUr9qHp62qUdyw1J97RZjMazycxdovQ==
-
 emoji-regex@^7.0.1:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-7.0.3.tgz#933a04052860c85e83c122479c4748a8e4c72156"
