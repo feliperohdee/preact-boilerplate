@@ -531,7 +531,7 @@ module.exports = (env = {}) => {
         };
 
         config.plugins.push(
-            new I18nWebpackPlugin(require(path.join(env.dir, lang ? `i18n/${lang}.json` : `i18n/default.json`)))
+            new I18nWebpackPlugin(require(path.join(env.dir, lang ? `i18n/${lang}.json` : `i18n/en-us.json`)))
         );
 
         if (!PRODUCTION) {
