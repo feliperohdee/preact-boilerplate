@@ -26,7 +26,6 @@ module.exports = (env = {}) => {
 
     env = _.defaults(env, {
         analyze: false,
-        bundle: false,
         hashed: true,
         inlineCss: false,
         i18n: '',
@@ -41,7 +40,6 @@ module.exports = (env = {}) => {
     env = _.reduce(env, (reduction, value, key) => {
         if (
             key === 'analyze' ||
-            key === 'bundle' ||
             key === 'hashed' ||
             key === 'inlineCss' ||
             key === 'minimize' ||
@@ -61,7 +59,6 @@ module.exports = (env = {}) => {
     }
 
     const polyfillsExists = fs.existsSync(path.join(env.dir, 'polyfills'));
-    const vendorExists = fs.existsSync(path.join(env.dir, 'src', 'vendor.js'));
     const cssLoader = {
         loader: 'css-loader',
         options: {
@@ -101,7 +98,7 @@ module.exports = (env = {}) => {
     };
 
     const excludeAssets = [
-        /(bundle|common|main|vendor|polyfills).*\.js/
+        /(vendors|main|polyfills).*\.js/
     ];
 
     if (!env.inlineCss) {
@@ -124,9 +121,6 @@ module.exports = (env = {}) => {
                 main: path.join(env.dir, 'src'),
                 ...polyfillsExists ? {
                     polyfills: path.join(env.dir, 'polyfills')
-                } : {},
-                ...vendorExists ? {
-                    vendor: path.join(env.dir, 'src', 'vendor.js')
                 } : {}
             },
             output: {
@@ -462,21 +456,24 @@ module.exports = (env = {}) => {
                     })
                 ] : [],
                 splitChunks: {
+                    chunks: 'all',
+                    minSize: 30000,
+                    maxSize: 0,
+                    minChunks: 1,
+                    maxAsyncRequests: 5,
+                    maxInitialRequests: 3,
+                    automaticNameDelimiter: '.',
+                    automaticNameMaxLength: 30,
+                    name: true,
                     cacheGroups: {
-                        ...env.bundle ? {
-                            bundle: {
-                                minChunks: 1,
-                                name: 'bundle',
-                                chunks: 'initial',
-                                test: /node_modules/,
-                                priority: 10
-                            }
-                        } : {},
-                        common: {
+                        vendors: {
+                            test: /[\\/]node_modules[\\/]/,
+                            priority: -10
+                        },
+                        default: {
                             minChunks: 2,
-                            name: 'common',
-                            chunks: 'initial',
-                            priority: 20
+                            priority: -20,
+                            reuseExistingChunk: true
                         }
                     }
                 }
