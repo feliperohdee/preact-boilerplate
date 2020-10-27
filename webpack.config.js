@@ -27,8 +27,8 @@ module.exports = (env = {}) => {
     env = _.defaults(env, {
         analyze: false,
         hashed: true,
-        inlineCss: false,
         i18n: '',
+        inlineCss: false,
         minimize: PRODUCTION,
         port: 8000,
         postCssConfig: false,
@@ -108,19 +108,20 @@ module.exports = (env = {}) => {
     }
 
     const babel = env.react ? babelReact() : babelPreact();
+    const srcPath = fs.existsSync(path.join(env.dir, 'src')) ? 'src' : '';
     const config = lang => {
         const config = {
             devServer: {
                 port: env.port,
                 host: 'localhost',
                 compress: false,
-                contentBase: path.join(env.dir, 'src'),
+                contentBase: path.join(env.dir, srcPath),
                 disableHostCheck: true,
                 historyApiFallback: true
             },
             devtool: PRODUCTION ? false : 'eval-cheap-source-map',
             entry: {
-                main: path.join(env.dir, 'src'),
+                main: path.join(env.dir, srcPath),
                 ...polyfillsExists ? {
                     polyfills: path.join(env.dir, 'polyfills')
                 } : {}
@@ -535,7 +536,6 @@ module.exports = (env = {}) => {
 
         if (!PRODUCTION) {
             config.plugins.push(
-                new webpack.optimize.ModuleConcatenationPlugin(),
                 new webpack.NamedModulesPlugin(),
                 // strip out babel-helper invariant checks
                 new ReplacePlugin({
@@ -555,7 +555,7 @@ module.exports = (env = {}) => {
                 config.plugins.push(new HtmlWebpackInlineSourcePlugin());
             }
 
-            const assetsDir = path.join(env.dir, 'src/assets');
+            const assetsDir = path.join(env.dir, srcPath, 'assets');
 
             if (fs.existsSync(assetsDir)) {
                 config.plugins.push(
@@ -590,7 +590,15 @@ module.exports = (env = {}) => {
     };
 
     if (env.i18n) {
-        return _.flatMap(env.i18n.split(','), config);
+        const configs = _.flatMap(env.i18n.split(','), lang => {
+            return config(_.trim(lang));
+        });
+
+        if (_.size(configs) === 1) {
+            return configs[0];
+        }
+
+        return configs;
     }
 
     return config();
