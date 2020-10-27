@@ -26,7 +26,7 @@ module.exports = (env = {}) => {
 
     env = _.defaults(env, {
         analyze: false,
-        inlineCss: true,
+        inlineCss: false,
         i18n: '',
         port: 8000,
         postCssConfig: false,
@@ -53,8 +53,9 @@ module.exports = (env = {}) => {
     if (fs.existsSync(path.join(env.dir, 'postcss.config.js'))) {
         env.postCssConfig = 'postcss.config.js';
     }
-    
+
     const polyfillsExists = fs.existsSync(path.join(env.dir, 'polyfills'));
+    const vendorExists = fs.existsSync(path.join(env.dir, 'src', 'vendor.js'));
     const cssLoader = {
         loader: 'css-loader',
         options: {
@@ -94,7 +95,7 @@ module.exports = (env = {}) => {
     };
 
     const excludeAssets = [
-        /(main|polyfills).*\.js$/
+        /(common|main|vendor|polyfills).*\.js$/
     ];
 
     if (!env.inlineCss) {
@@ -113,11 +114,14 @@ module.exports = (env = {}) => {
                 historyApiFallback: true
             },
             devtool: PRODUCTION ? false : 'eval-cheap-source-map',
-            entry: polyfillsExists ? {
+            entry: {
                 main: path.join(env.dir, 'src'),
-                polyfills: path.join(env.dir, 'polyfills')
-            } : {
-                main: path.join(env.dir, 'src')
+                ...polyfillsExists ? {
+                    polyfills: path.join(env.dir, 'polyfills')
+                } : {},
+                ...vendorExists ? {
+                    vendor: path.join(env.dir, 'src', 'vendor.js')
+                } : {}
             },
             output: {
                 path: path.join(env.dir, 'build'),
@@ -145,19 +149,8 @@ module.exports = (env = {}) => {
             module: {
                 rules: [{
                     test: /^((?!\.?local).)*(scss|css)$/,
-                    use: PRODUCTION ? [
+                    use: [
                         MiniCssExtractPlugin.loader, {
-                            ...cssLoader,
-                            options: {
-                                ...cssLoader.options,
-                                modules: false
-                            }
-                        },
-                        'resolve-url-loader',
-                        postCssLoader,
-                        sassLoader
-                    ] : [
-                        'style-loader', {
                             ...cssLoader,
                             options: {
                                 ...cssLoader.options,
@@ -170,14 +163,8 @@ module.exports = (env = {}) => {
                     ]
                 }, {
                     test: /\.local\.(scss|css)$/,
-                    use: PRODUCTION ? [
+                    use: [
                         MiniCssExtractPlugin.loader,
-                        cssLoader,
-                        'resolve-url-loader',
-                        postCssLoader,
-                        sassLoader
-                    ] : [
-                        'style-loader',
                         cssLoader,
                         'resolve-url-loader',
                         postCssLoader,
@@ -469,7 +456,14 @@ module.exports = (env = {}) => {
                     })
                 ] : [],
                 splitChunks: {
-                    minChunks: 3
+                    minChunks: 3,
+                    cacheGroups: {
+                        common: {
+                            minChunks: 2,
+                            name: 'common',
+                            chunks: 'initial'
+                        }
+                    }
                 }
             },
             plugins: [
