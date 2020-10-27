@@ -34,7 +34,8 @@ module.exports = (env = {}) => {
         postCssConfig: false,
         publicPath: PRODUCTION ? '' : '/',
         react: false,
-        title: ''
+        title: '',
+        vendors: true
     });
 
     env = _.reduce(env, (reduction, value, key) => {
@@ -43,7 +44,8 @@ module.exports = (env = {}) => {
             key === 'hashed' ||
             key === 'inlineCss' ||
             key === 'minimize' ||
-            key === 'react'
+            key === 'react' ||
+            key === 'vendors'
         ) {
             value = value === true || value === 'true';
         }
@@ -455,8 +457,8 @@ module.exports = (env = {}) => {
                         }
                     })
                 ] : [],
-                splitChunks: {
-                    chunks: 'all',
+                splitChunks: env.vendors ? {
+                    chunks: 'initial',
                     minSize: 30000,
                     maxSize: 0,
                     minChunks: 1,
@@ -476,7 +478,7 @@ module.exports = (env = {}) => {
                             reuseExistingChunk: true
                         }
                     }
-                }
+                } : {}
             },
             plugins: [
                 new webpack.NoEmitOnErrorsPlugin(),
@@ -578,7 +580,10 @@ module.exports = (env = {}) => {
         const webpackConfigExists = fs.existsSync(path.join(env.dir, 'webpack.config.js'));
 
         if (webpackConfigExists) {
-            return require(path.join(env.dir, 'webpack.config.js'))(config, lang || '');
+            return require(path.join(env.dir, 'webpack.config.js'))(config, {
+                env,
+                lang: lang || ''
+            });
         }
 
         return config;
