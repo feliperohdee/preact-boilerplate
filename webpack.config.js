@@ -415,10 +415,10 @@ module.exports = (env = {}) => {
                 }, {
                     test: /\.(svg|woff2?|ttf|eot|jpe?g|png|gif|mp4|mov|ogg|webm|cur|mp3|mp4)(\?.*)?$/i,
                     loader: 'file-loader',
-                    options: PRODUCTION ? {
+                    options: {
                         outputPath: 'assets',
                         publicPath: `${env.publicPath}assets`
-                    } : {}
+                    }
                 }]
             },
             optimization: {
