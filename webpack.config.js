@@ -26,6 +26,8 @@ module.exports = (env = {}) => {
 
     env = _.defaults(env, {
         analyze: false,
+        build: 'build',
+        config: 'webpack.config.js',
         hashed: true,
         i18n: '',
         inlineCss: false,
@@ -33,6 +35,7 @@ module.exports = (env = {}) => {
         port: 8000,
         postCssConfig: false,
         publicPath: PRODUCTION ? '' : '/',
+        src: 'src',
         react: false,
         title: '',
         vendors: true
@@ -108,7 +111,7 @@ module.exports = (env = {}) => {
     }
 
     const babel = env.react ? babelReact() : babelPreact();
-    const srcPath = fs.existsSync(path.join(env.dir, 'src')) ? 'src' : '';
+    const srcPath = fs.existsSync(path.join(env.dir, env.src)) ? env.src : '';
     const config = lang => {
         const config = {
             devServer: {
@@ -127,7 +130,7 @@ module.exports = (env = {}) => {
                 } : {}
             },
             output: {
-                path: path.join(env.dir, 'build'),
+                path: path.join(env.dir, env.build),
                 filename: env.hashed ? (lang ? `[name].[hash].${lang}.js` : '[name].[hash].js') : (lang ? `[name].${lang}.js?v=[hash]` : '[name].js?v=[hash]'),
                 publicPath: env.publicPath
             },
@@ -562,7 +565,7 @@ module.exports = (env = {}) => {
                     new CopyWebpackPlugin({
                         patterns: [{
                             from: assetsDir,
-                            to: path.join(env.dir, 'build/assets')
+                            to: path.join(env.dir, env.build, 'assets')
                         }]
                     })
                 );
@@ -570,17 +573,17 @@ module.exports = (env = {}) => {
                 config.plugins.push(
                     new MakeDirWebpackPlugin({
                         dirs: [{
-                            path: path.resolve(env.dir, 'build/assets')
+                            path: path.resolve(env.dir, env.build, 'assets')
                         }]
                     })
                 );
             }
         }
 
-        const webpackConfigExists = fs.existsSync(path.join(env.dir, 'webpack.config.js'));
+        const webpackConfigExists = fs.existsSync(path.join(env.dir, env.config));
 
         if (webpackConfigExists) {
-            return require(path.join(env.dir, 'webpack.config.js'))(config, {
+            return require(path.join(env.dir, env.config))(config, {
                 env,
                 lang: lang || ''
             });
