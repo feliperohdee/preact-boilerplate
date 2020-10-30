@@ -215,6 +215,7 @@ module.exports = (env = {}) => {
                             },
                             globals: [
                                 '__',
+                                'BROWSER',
                                 'PRODUCTION',
                                 'process',
                             ],
@@ -518,6 +519,7 @@ module.exports = (env = {}) => {
                 }),
                 new HtmlWebpackExcludeAssetsPlugin(),
                 new webpack.DefinePlugin({
+                    'BROWSER': true,
                     'PRODUCTION': PRODUCTION,
                     ..._.reduce(process.env, (reduction, value, key) => {
                         if (
