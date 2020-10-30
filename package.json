@@ -51,9 +51,7 @@
         "webpack-cli": "^4.1.0",
         "webpack-dev-server": "^3.8.2",
         "webpack-fix-style-only-entries": "^0.6.0",
-        "webpack-plugin-replace": "^1.2.0"
-    },
-    "devDependencies": {
+        "webpack-plugin-replace": "^1.2.0",
         "webpack-stats-plugin": "^1.0.2"
     }
 }

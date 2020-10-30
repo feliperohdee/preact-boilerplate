@@ -23,6 +23,7 @@ const {
 
 const babelPreact = require('./babel/preact');
 const babelReact = require('./babel/react');
+const browsers = require('./browsers');
 
 module.exports = (env = {}) => {
     const PRODUCTION = process.env.NODE_ENV === 'production';
@@ -86,7 +87,7 @@ module.exports = (env = {}) => {
                 config: _.isString(env.postCssConfig) ? path.join(env.dir, env.postCssConfig) : env.postCssConfig,
                 plugins: [
                     autoprefixer({
-                        overrideBrowserslist: ['> 1%', 'IE >= 9', 'last 2 versions']
+                        overrideBrowserslist: browsers
                     })
                 ]
             },
