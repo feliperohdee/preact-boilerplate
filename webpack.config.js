@@ -540,6 +540,14 @@ module.exports = (env = {}) => {
                         all: true
                     },
                     transform: stats => {
+                        const group = files => {
+                            return _.groupBy(files, file => {
+                                return path.extname(file)
+                                    .replace(/\?.*/, '')
+                                    .slice(1);
+                            });
+                        };
+
                         const async = new Set(_(stats.chunks)
                             .filter(chunk => {
                                 return !chunk.initial;
@@ -568,8 +576,8 @@ module.exports = (env = {}) => {
                             });
 
                         return JSON.stringify({
-                            async: Array.from(async),
-                            assets
+                            async: group(Array.from(async)),
+                            assets: group(assets)
                         }, null, 2);
                     }
                 })
