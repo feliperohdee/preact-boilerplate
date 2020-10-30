@@ -1,7 +1,7 @@
 <% const env = htmlWebpackPlugin.options.env; %>
 <% const title = htmlWebpackPlugin.options.title; %>
 <% const files = htmlWebpackPlugin.files; %>
-<% const async = file => file.match(/\d+\.\w*\.(js|css)/g) !== null; %>
+<% const async = file => file.match(/^\d+(\.\w+)*\.(js|css)/g) !== null; %>
 <% const asyncFiles = _.flatMap(webpack.chunks, chunk => _.filter(chunk.files, async)); %>
 <% const static = PRODUCTION ? env.publicPath : '/'; %>
 <!DOCTYPE html>
