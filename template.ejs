@@ -12,7 +12,7 @@
 		<title><%= title %></title>
 		<link rel="shortcut icon" href="<%= static %>assets/favicon.ico"/>
 		<% _.forEach(asyncFiles, file => { %>
-			<link rel="preload" href="<%= static + file %>" as="<%= file.match(/\.css$/) ? 'style' : 'script' %>">
+			<link rel="preload" href="<%= static + file %>" as="<%= file.match(/\.css/) ? 'style' : 'script' %>">
 		<% }) %>
 		<% !env.inlineCss && _.forEach(files.css, file => { %>
 			<link rel="stylesheet" href="<%= file %>">
