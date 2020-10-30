@@ -17,6 +17,9 @@ const webpack = require('webpack');
 const {
     BundleAnalyzerPlugin
 } = require('webpack-bundle-analyzer');
+const {
+    StatsWriterPlugin
+} = require('webpack-stats-plugin');
 
 const babelPreact = require('./babel/preact');
 const babelReact = require('./babel/react');
@@ -531,6 +534,44 @@ module.exports = (env = {}) => {
 
                         return reduction;
                     }, {})
+                }),
+                new StatsWriterPlugin({
+                    stats: {
+                        all: true
+                    },
+                    transform: stats => {
+                        const async = new Set(_(stats.chunks)
+                            .filter(chunk => {
+                                return !chunk.initial;
+                            })
+                            .flatMap(chunk => {
+                                return _.filter(chunk.files, file => {
+                                    file = file.replace(/\?.*/, '');
+
+                                    return (
+                                        _.endsWith(file, '.css') ||
+                                        _.endsWith(file, '.js') ||
+                                        _.endsWith(file, '.json')
+                                    );
+                                });
+                            }));
+
+                        const assets = _.map(stats.assets, 'name')
+                            .filter(asset => {
+                                const _asset = asset.replace(/\?.*/, '');
+
+                                return !async.has(asset) && (
+                                    _.endsWith(_asset, '.css') ||
+                                    _.endsWith(_asset, '.js') ||
+                                    _.endsWith(_asset, '.json')
+                                );
+                            });
+
+                        return JSON.stringify({
+                            async: Array.from(async),
+                            assets
+                        }, null, 2);
+                    }
                 })
             ]
         };
