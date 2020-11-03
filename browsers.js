@@ -1,4 +1,4 @@
-export default [
+module.exports = [
     'last 2 chrome version',
     'last 2 chromeandroid version',
     'last 2 firefox version',

@@ -1,4 +1,4 @@
-const brwsers = require('../browsers');
+const browsers = require('../browsers');
 
 module.exports = {
     presets: [
