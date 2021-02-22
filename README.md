@@ -1,6 +1,6 @@
 Lightweight preact/react boilerplate with support for inline CSS, automatic code splitting and async scripts.
 
-		yarn add preact --dev preact-boilerplate
+		yarn add https://github.com/feliperohdee/preact-boilerplate --dev
 		
 		## to build
 		./node_modules/preact-boilerplate/run build 
